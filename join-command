@@ -1,0 +1,1 @@
+["kubeadm join 192.168.18.150:6443 --token 215zlh.dlfhyczwxlk1oq55 \\", "\t--discovery-token-ca-cert-hash sha256:f80557b6bcf3799d51c8371fddb29e3db4c762c52ad62ac252c9422a48b5515c "]

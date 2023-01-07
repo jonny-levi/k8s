@@ -208,6 +208,9 @@
     register: init_output
     delegate_to: master_node01
   
+  - debug:
+      var: init_output.stdout_lines
+
   - name: Initializing Kubernetes Cluster - setup configurations
     ansible.builtin.shell:
         mkdir -p /home/jonathan/.kube
@@ -223,25 +226,25 @@
       remote_src: yes
     delegate_to: master_node01
     become: true
+ 
+    #- name: Check that the somefile.conf exists
+    #stat:
+    #path: /etc/file.txt
+    #register: stat_result
 
-    #- name: Initializing Kubernetes Cluster - copy config
-    #ansible.builtin.shell:
-    #sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-    #delegate_to: master_node01
+      #- name: Create the file, if it doesnt exist already
+      #file:
+      #path: /etc/file.txt
+      #state: touch
+      #when: not stat_result.stat.exists
 
 
-    #- name: Initializing Kubernetes Cluster - change permissions
-    #ansible.builtin.shell:
-    #sudo chown $(id -u):$(id -g) $HOME/.kube/config
-    #delegate_to: master_node01
-
-
-  - name: Initializing Kubernetes Cluster
-    ansible.builtin.shell:
-      kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
-    delegate_to: master_node01
+      #- name: Initializing Kubernetes Cluster
+      #ansible.builtin.shell:
+      #kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
+      #become_user: jonathan
+      #delegate_to: master_node01
 
   - name: Copy join command to local file
-    local_action: copy content={{ init_output.stdout_lines[-2:] }} dest="./join-command"
-    delegate_to: master_node01
+    local_action: copy content={{ init_output.stdout_lines[-2:] }} dest="/home/jonathan/join-command"
 
