@@ -1,25 +1,13 @@
 all:
   hosts:
   children:
-    k8s:
+    k8s_masters:
       hosts:
-        #ansible: 
-        # ansible_host: 192.168.18.113
-        #masternode_host: 
-        #ansible_host: 192.168.18.110
-        #ansible_user: jonathan
-        #ansible_password: Superbon202@
-        #workernode01_host: 
-        #ansible_host: 192.168.18.111
-        #ansible_user: jonathan
-        #ansible_password: Superbon202@
-        #workernode02_host: 
-        #ansible_host: 192.168.18.112
-        #ansible_user: jonathan
-        #ansible_password: Superbon202@
+        master_node01:
+          ansible_host: 192.168.18.150
+    k8s_nodes:
+      hosts:
         worker_node01:
           ansible_host: 192.168.18.151
         worker_node02:
           ansible_host: 192.168.18.152
-        master_node01:
-          ansible_host: 192.168.18.150

@@ -1,7 +1,10 @@
 - hosts: all
   become: true
+  pre_tasks:
+    - name: variables
+      ansible.builtin.include_vars: vars/all.yml
   tasks:
-  
+
   - name: Set a hostname
     ansible.builtin.hostname:
       name: master-node01
@@ -202,19 +205,21 @@
       sudo apt-mark hold kubelet kubeadm kubectl
   
   - name: Initialize the Kubernetes cluster using kubeadm
-    command: sudo kubeadm init \
-      --pod-network-cidr=10.244.0.0/16 \
-      --cri-socket unix:///run/containerd/containerd.sock
+    shell: |
+      sudo kubeadm init 
+      --token {{ join_token }} 
+      --pod-network-cidr=10.244.0.0/16 
+      --cri-socket {{ container_runtime }}
     register: init_output
-    delegate_to: master_node01
-  
+    delegate_to: k8s_masters
+ 
   - debug:
       var: init_output.stdout_lines
 
   - name: Initializing Kubernetes Cluster - setup configurations
     ansible.builtin.shell:
         mkdir -p /home/jonathan/.kube
-    delegate_to: master_node01
+    delegate_to: k8s_masters
  
   - name: Copy file with owner and permissions
     ansible.builtin.copy: 
@@ -224,27 +229,17 @@
       group: jonathan
       mode: '0755'
       remote_src: yes
-    delegate_to: master_node01
+    delegate_to: k8s_masters
     become: true
  
-    #- name: Check that the somefile.conf exists
-    #stat:
-    #path: /etc/file.txt
-    #register: stat_result
+  - name: Initializing Kubernetes Cluster
+    ansible.builtin.shell:
+      kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
+    become_user: jonathan
+    delegate_to: k8s_masters
 
-      #- name: Create the file, if it doesnt exist already
-      #file:
-      #path: /etc/file.txt
-      #state: touch
-      #when: not stat_result.stat.exists
-
-
-      #- name: Initializing Kubernetes Cluster
-      #ansible.builtin.shell:
-      #kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
-      #become_user: jonathan
-      #delegate_to: master_node01
-
-  - name: Copy join command to local file
-    local_action: copy content={{ init_output.stdout_lines[-2:] }} dest="/home/jonathan/join-command"
+  - name: Join nodes to cluster 
+    ansible.builtin.shell: |
+      "kubeadm join {{ master_node01 }}:6443 --token {{ join-token }} --discovery-token-unsafe-skip-ca-verification --cri-socket {{ container_runtime }}"
+    delegate_to: k8s_nodes
 
