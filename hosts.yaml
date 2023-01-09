@@ -1,13 +1,24 @@
 all:
   hosts:
+    ansible_controler:
+      ansible_host: 192.168.18.129
+      ansible_ssh_user: jonathan
+      ansible_ssh_pass: Superbon2022
   children:
     k8s_masters:
       hosts:
         master_node01:
           ansible_host: 192.168.18.150
+          ansible_ssh_user: jonathan
+          ansible_ssh_pass: Superbon2022
     k8s_nodes:
       hosts:
         worker_node01:
           ansible_host: 192.168.18.151
+          ansible_ssh_user: jonathan
+          ansible_ssh_pass: Superbon2022
         worker_node02:
           ansible_host: 192.168.18.152
+          ansible_ssh_user: jonathan
+          ansible_ssh_pass: Superbon2022
+
