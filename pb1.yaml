@@ -1,5 +1,0 @@
-- hosts: all
-  tasks:
-  - name: Show masternode01 ip
-    debug:
-      msg: "{{ ansible_host }}"
