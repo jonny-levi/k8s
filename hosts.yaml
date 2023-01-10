@@ -1,9 +1,5 @@
 all:
   hosts:
-    ansible_controler:
-      ansible_ssh_user: jonathan
-      ansible_ssh_pass: Superbon2022
-      ansible_sudo_pass: Superbon2022
   children:
     k8s_masters:
       hosts:
