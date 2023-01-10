@@ -213,7 +213,7 @@
 
     - name: Join nodes to cluster
       ansible.builtin.shell: |
-        "kubeadm join 192.168.18.150:6443 --token {{ join-token }} --discovery-token-unsafe-skip-ca-verification --cri-socket {{ container_runtime }}"
+        "kubeadm join 192.168.18.150:6443 --token {{ join_token }} --discovery-token-unsafe-skip-ca-verification --cri-socket {{ container_runtime }}"
       delegate_to: "{{ item }}"
       with_items:
         - "{{ groups.k8s_nodes }}"
