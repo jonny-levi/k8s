@@ -177,9 +177,9 @@
 
     - name: Initialize the Kubernetes cluster using kubeadm
       shell: |
-          "sudo kubeadm init 
-          --token {{ join_token }} 
-          --pod-network-cidr=10.244.0.0/16 
+          "sudo kubeadm init \
+          --token {{ join_token }} \
+          --pod-network-cidr=10.244.0.0/16 \ 
           --cri-socket {{ container_runtime }}"
       register: init_output
       delegate_to: "{{ item }}"
