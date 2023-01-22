@@ -5,15 +5,15 @@ all:
       hosts:
         master_node01:
           ansible_ssh_user: jonathan
-          ansible_ssh_pass: Superbon202@
-          ansible_sudo_pass: Superbon202@
+          ansible_ssh_pass: Superbon2022
+          ansible_sudo_pass: Superbon2022
     k8s_nodes:
       hosts:
         worker_node01:
           ansible_ssh_user: jonathan
-          ansible_ssh_pass: Superbon202@
-          ansible_sudo_pass: Superbon202@
+          ansible_ssh_pass: Superbon2022
+          ansible_sudo_pass: Superbon2022
         worker_node02:
           ansible_ssh_user: jonathan
-          ansible_ssh_pass: Superbon202@
-          ansible_sudo_pass: Superbon202@
+          ansible_ssh_pass: Superbon2022
+          ansible_sudo_pass: Superbon2022
