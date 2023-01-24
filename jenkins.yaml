@@ -1,6 +1,20 @@
 - hosts: master_node01
 
   tasks:
+    - name: Cleaning all old resources.
+      shell: | 
+        kubectl delete clusterrole jenkins-admin
+        kubectl delete serviceaccount jenkins-admin -n devops-tools
+        kubectl delete clusterrolebinding jenkins-admin -n devops-tools
+        kubectl delete storageclass local-storage 
+        kubectl delete pv jenkins-pv-volume
+        kubectl delete pvc jenkins-pv-claim -n devops-tools
+        kubectl delete deployment jenkins -n devops-tools
+        kubectl delete jenkins-service -n devops-tools
+        kubectl delete namespace devops-tools
+      ignore_errors: true
+
+
     - name: Cloning repository localy
       ansible.builtin.shell: git clone https://github.com/scriptcamp/kubernetes-jenkins
     
