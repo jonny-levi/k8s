@@ -14,9 +14,6 @@
         kubectl delete namespace devops-tools
       ignore_errors: true
 
-    - name: Cloning repository localy
-      ansible.builtin.shell: git clone https://github.com/scriptcamp/kubernetes-jenkins
-
     - name: Creating devops-tools namespace
       ansible.builtin.shell: kubectl create namespace devops-tools
 
@@ -29,103 +26,11 @@
     - name: Creating ClusterRoleBinding
       ansible.builtin.shell: kubectl create clusterrolebinding jenkins-admin --clusterrole=jenkins-admin --serviceaccount=devops-tools:jenkins-admin
 
-    - name: Creating volume on the node for jenkins
-      ansible.builtin.blockinfile:
-        path: /tmp/jenkins/volume.yaml
-        create: true
-        block: |
+    - name: Creating Volume
+      ansible.builtin.shell: kubectl create -f https://github.com/jonny-levi/k8s/jenkins/volume.yaml
 
-    - name: Creating ClusterRoleBinding
-      ansible.builtin.shell: kubectl create -f /tmp/jenkins/volume.yaml
+    - name: Creating Deployment
+      ansible.builtin.shell: kubectl create -f https://github.com/jonny-levi/k8s/jenkins/deployment.yaml
 
-    - name: Creating volume on the node for jenkins
-      ansible.builtin.blockinfile:
-        path: /tmp/jenkins/deployment-jenkins.yaml
-        create: true
-        block: |
-          apiVersion: apps/v1
-          kind: Deployment
-          metadata:
-            name: jenkins
-            namespace: devops-tools
-          spec:
-            replicas: 1
-            selector:
-              matchLabels:
-                app: jenkins-server
-            template:
-              metadata:
-                labels:
-                  app: jenkins-server
-              spec:
-                securityContext:
-                      fsGroup: 1000
-                      runAsUser: 1000
-                serviceAccountName: jenkins-admin
-                containers:
-                  - name: jenkins
-                    image: jenkins/jenkins:lts
-                    resources:
-                      limits:
-                        memory: "2Gi"
-                        cpu: "1000m"
-                      requests:
-                        memory: "500Mi"
-                        cpu: "500m"
-                    ports:
-                      - name: httpport
-                        containerPort: 8080
-                      - name: jnlpport
-                        containerPort: 50000
-                    livenessProbe:
-                      httpGet:
-                        path: "/login"
-                        port: 8080
-                      initialDelaySeconds: 90
-                      periodSeconds: 10
-                      timeoutSeconds: 5
-                      failureThreshold: 5
-                    readinessProbe:
-                      httpGet:
-                        path: "/login"
-                        port: 8080
-                      initialDelaySeconds: 60
-                      periodSeconds: 10
-                      timeoutSeconds: 5
-                      failureThreshold: 3
-                    volumeMounts:
-                      - name: jenkins-data
-                        mountPath: /var/jenkins_home
-                volumes:
-                  - name: jenkins-data
-                    persistentVolumeClaim:
-                        claimName: jenkins-pv-claim
-
-    - name: Creating ClusterRoleBinding
-      ansible.builtin.shell: kubectl create -f /tmp/jenkins/deployment-jenkins.yaml
-
-    - name: Creating volume on the node for jenkins
-      ansible.builtin.blockinfile:
-        path: /tmp/jenkins/service-jenkins.yaml
-        create: true
-        block: |
-          apiVersion: v1
-          kind: Service
-          metadata:
-            name: jenkins-service
-            namespace: devops-tools
-            annotations:
-                prometheus.io/scrape: 'true'
-                prometheus.io/path:   /
-                prometheus.io/port:   '8080'
-          spec:
-            selector:
-              app: jenkins-server
-            type: NodePort
-            ports:
-              - port: 8080
-                targetPort: 8080
-                nodePort: 32000
-
-    - name: Creating ClusterRoleBinding
-      ansible.builtin.shell: kubectl create -f /tmp/jenkins/service-jenkins.yaml
+    - name: Creating service for jenkins
+      ansible.builtin.shell: kubectl create -f https://github.com/jonny-levi/k8s/jenkins/service.yaml
