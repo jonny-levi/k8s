@@ -2,10 +2,10 @@
   gather_facts: yes
   become: yes
   roles:
-    - { role: k8s/master, tags: master }
+    - { role: k8s/master}
 
 - hosts: k8s_nodes
   gather_facts: yes
   become: yes
   roles:
-    - { role: k8s/nodes, tags: node }
+    - { role: k8s/nodes}
