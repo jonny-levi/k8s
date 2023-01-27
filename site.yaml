@@ -1,6 +1,5 @@
 ---
 - hosts: k8s_masters
-  gather_facts: yes
   become: yes
   roles:
     - { role: k8s/master}
