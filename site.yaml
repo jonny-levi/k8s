@@ -2,11 +2,17 @@
 - hosts: k8s_masters
   gather_facts: yes
   become: yes
+  pre_tasks:
+    - name: variables
+      ansible.builtin.include_vars: vars/all.yml
   roles:
     - { role: k8s/k8s_masters}
 
 - hosts: k8s_nodes
   gather_facts: yes
   become: yes
+  pre_tasks:
+    - name: variables
+      ansible.builtin.include_vars: vars/all.yml
   roles:
     - { role: k8s/k8s_nodes}
