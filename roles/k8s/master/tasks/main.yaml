@@ -1,9 +1,4 @@
-# - hosts: k8s_masters
-#   become: true
-#   pre_tasks:
-#     - name: variables
-#       ansible.builtin.include_vars: vars/all.yml
- # tasks:
+
 - name: Set a hostname
   ansible.builtin.hostname:
     name: master-node01
