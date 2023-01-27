@@ -1,8 +1,8 @@
 # - hosts: k8s_nodes
 #   become: true
 #   pre_tasks:
-#     - name: variables
-#       ansible.builtin.include_vars: vars/all.yml
+- name: variables
+  ansible.builtin.include_vars: vars/all.yml
 
 - name: Set a hostname
   ansible.builtin.hostname:
