@@ -1,0 +1,11 @@
+- hosts: k8s_masters
+  gather_facts: yes
+  become: yes
+  roles:
+    - { role: k8s/master, tags: master }
+
+- hosts: k8s_nodes
+  gather_facts: yes
+  become: yes
+  roles:
+    - { role: k8s/nodes, tags: node }
