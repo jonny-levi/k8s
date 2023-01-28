@@ -206,3 +206,13 @@
     - "{{ groups.k8s_masters }}"
 
 
+- name: Update all packages
+  ansible.builtin.apt:
+    name: "*"
+    state: latest
+
+- name: Installing Java for Jenkins agent
+  ansible.builtin.apt:
+    name: openjdk-11-jre
+
+

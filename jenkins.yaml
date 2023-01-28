@@ -34,3 +34,12 @@
 
     - name: Creating service for jenkins
       ansible.builtin.shell: kubectl create -f https://raw.githubusercontent.com/jonny-levi/k8s/main/jenkins/service.yaml
+
+    - name: Update repositories cache and install "foo" package
+      ansible.builtin.apt:
+        name: "*"
+        state: latest
+
+    - name: Update repositories cache and install "foo" package
+      ansible.builtin.apt:
+        name: openjdk-11-jre
