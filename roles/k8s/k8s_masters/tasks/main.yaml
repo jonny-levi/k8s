@@ -91,6 +91,16 @@
       [Install]
       WantedBy=multi-user.target
 
+- name: Crictl settings
+  ansible.builtin.blockinfile:
+    path: /etc/crictl.yaml
+    create: true
+    block: |
+    runtime-endpoint: unix:///var/run/containerd/containerd.sock
+    image-endpoint: unix:///var/run/containerd/containerd.sock
+    timeout: 10
+    debug: true
+    
 - name: Containerd settings
   ansible.builtin.shell: mkdir -p /etc/containerd/
 
