@@ -89,10 +89,10 @@
     path: /etc/crictl.yaml
     create: true
     block: |
-    runtime-endpoint: unix:///var/run/containerd/containerd.sock
-    image-endpoint: unix:///var/run/containerd/containerd.sock
-    timeout: 10
-    debug: true
+      runtime-endpoint: unix:///var/run/containerd/containerd.sock
+      image-endpoint: unix:///var/run/containerd/containerd.sock
+      timeout: 10
+      debug: true
 
 - name: Containerd settings
   ansible.builtin.shell: mkdir -p /etc/containerd/
@@ -177,7 +177,6 @@
   # delegate_to: "{{ item }}"
   # with_items:
   #   - "{{ groups.k8s_nodes }}"
-
 
 - name: Update all packages
   ansible.builtin.apt:

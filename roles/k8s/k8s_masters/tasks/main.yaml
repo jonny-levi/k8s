@@ -96,11 +96,11 @@
     path: /etc/crictl.yaml
     create: true
     block: |
-    runtime-endpoint: unix:///var/run/containerd/containerd.sock
-    image-endpoint: unix:///var/run/containerd/containerd.sock
-    timeout: 10
-    debug: true
-    
+      runtime-endpoint: unix:///var/run/containerd/containerd.sock
+      image-endpoint: unix:///var/run/containerd/containerd.sock
+      timeout: 10
+      debug: true
+
 - name: Containerd settings
   ansible.builtin.shell: mkdir -p /etc/containerd/
 
@@ -215,7 +215,6 @@
   with_items:
     - "{{ groups.k8s_masters }}"
 
-
 - name: Update all packages
   ansible.builtin.apt:
     name: "*"
@@ -224,5 +223,3 @@
 - name: Installing Java for Jenkins agent
   ansible.builtin.apt:
     name: openjdk-11-jre
-
-
