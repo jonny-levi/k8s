@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: pig-game
+  name: pig-game
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pig-game
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: pig-game
+    spec:
+      containers:
+      - image: jonathanlevi/pig-game:0.0.1
+        name: pig-game
+        ports:
+          - containerPort: 80
+        resources: {}
+status: {}
