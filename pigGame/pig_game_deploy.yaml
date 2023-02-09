@@ -18,9 +18,9 @@ spec:
         app: pig-game
     spec:
       containers:
-      - image: jonathanlevi/pig_game:0.0.1
+      - image: jonathanlevi/pig_game:0.0.4
         name: pig-game
         ports:
-          - containerPort: 80
+          - containerPort: 8080
         resources: {}
 status: {}

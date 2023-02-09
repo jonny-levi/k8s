@@ -7,9 +7,9 @@ metadata:
   name: pig-game-service
 spec:
   ports:
-  - port: 80
+  - port: 8080
     protocol: TCP
-    targetPort: 80
+    targetPort: 8080
     nodePort: 31112
   selector:
     app: pig-game-number
