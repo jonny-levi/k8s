@@ -12,7 +12,7 @@ spec:
     targetPort: 8080
     nodePort: 31112
   selector:
-    app: pig-game-number
+    app: pig-game
   type: NodePort
 status:
   loadBalancer: {}
