@@ -4,16 +4,16 @@ all:
     k8s_masters:
       hosts:
         master_node01:
-          ansible_ssh_user: jonathan
-          ansible_ssh_pass: Superbon2022
-          ansible_sudo_pass: Superbon2022
+          ansible_ssh_user: 
+          ansible_ssh_pass: 
+          ansible_sudo_pass: 
     k8s_nodes:
       hosts:
         worker_node01:
-          ansible_ssh_user: jonathan
-          ansible_ssh_pass: Superbon2022
-          ansible_sudo_pass: Superbon2022
+          ansible_ssh_user: 
+          ansible_ssh_pass: 
+          ansible_sudo_pass: 
         worker_node02:
-          ansible_ssh_user: jonathan
-          ansible_ssh_pass: Superbon2022
-          ansible_sudo_pass: Superbon2022
+          ansible_ssh_user: 
+          ansible_ssh_pass: 
+          ansible_sudo_pass: 
