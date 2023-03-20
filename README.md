@@ -1,23 +1,30 @@
 # k8s cluster deployment
 
-#########################   Creating virtual machines  #########################
+*************************
+Creating virtual machines  
+*************************
 
-Download Ubuntu iso and create at least 3 virtual-machines.
-Assign 3 different IP address for each vm.
-Name the vm machines accordingly (ansible, worker-node-xxxx, master-node-xxxx)
+1. Download Ubuntu iso and create at least 3 virtual-machines.
+2. Assign 3 different IP address for each vm.
+3. Name the vm machines accordingly (ansible, worker-node-xxxx, master-node-xxxx)
 
-#########################   Installing Ansible server   #########################
-sudo apt update
-sudo apt install ansible
+*************************   
+Installing Ansible server
+*************************
 
-#########################   Downloading the repo to Ansible server    #########################
+1. sudo apt update
+2. sudo apt install ansible
 
-git clone https://github.com/jonny-levi/k8s.git
+*************************   
+Downloading the repo to Ansible server    
+*************************
+
+1. git clone https://github.com/jonny-levi/k8s.git
 
 
-#########################
+*************************
 Initialize K8s cluster
-#########################
+*************************
 
-Fullfil the hosts.yaml in the k8s directory.
+1. Fullfil the hosts.yaml in the k8s directory.
 
