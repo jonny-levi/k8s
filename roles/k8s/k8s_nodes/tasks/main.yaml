@@ -158,6 +158,11 @@
   ansible.builtin.shell: sudo apt-get install -y apt-transport-https ca-certificates curl
 
 - name: Installing kubeadm, kubelet and kubectl - installing prerequisites
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+
+- name: Installing kubeadm, kubelet and kubectl - installing prerequisites
   ansible.builtin.shell: sudo curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
 
 - name: Installing kubeadm, kubelet and kubectl - installing prerequisites
@@ -173,10 +178,7 @@
   ansible.builtin.shell: sudo apt-mark hold kubelet kubeadm kubectl
 
 - name: Join nodes to cluster
-  ansible.builtin.shell: "kubeadm join 192.168.85.150:6443 --token {{ join_token }} --discovery-token-unsafe-skip-ca-verification --cri-socket {{ container_runtime }}"
-  # delegate_to: "{{ item }}"
-  # with_items:
-  #   - "{{ groups.k8s_nodes }}"
+  ansible.builtin.shell: "kubeadm join {{ master_node01 }}:6443 --token {{ join_token }} --discovery-token-unsafe-skip-ca-verification --cri-socket {{ container_runtime }}"
 
 - name: Update all packages
   ansible.builtin.apt:

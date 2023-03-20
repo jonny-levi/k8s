@@ -165,6 +165,12 @@
   ansible.builtin.shell: sudo apt-get install -y apt-transport-https ca-certificates curl
 
 - name: Installing kubeadm, kubelet and kubectl - installing prerequisites
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+
+
+- name: Installing kubeadm, kubelet and kubectl - installing prerequisites
   ansible.builtin.shell: sudo curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
 
 - name: Installing kubeadm, kubelet and kubectl - installing prerequisites
