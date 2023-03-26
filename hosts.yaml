@@ -4,22 +4,26 @@ all:
     k8s_masters:
       hosts:
         master_node01:
+          ansible_host: 172.20.10.11
           ansible_ssh_user: jonathan
-          ansible_ssh_pass: Superbon2022
-          ansible_sudo_pass: Superbon2022
+          ansible_ssh_pass: Superbon202#
+          ansible_sudo_pass: Superbon202#
     k8s_nodes:
       hosts:
         worker_node01:
+          ansible_host: 172.20.10.12
           ansible_ssh_user: jonathan
-          ansible_ssh_pass: Superbon2022
-          ansible_sudo_pass: Superbon2022
+          ansible_ssh_pass: Superbon202#
+          ansible_sudo_pass: Superbon202#
         worker_node02:
+          ansible_host: 172.20.10.13
           ansible_ssh_user: jonathan
-          ansible_ssh_pass: Superbon2022
-          ansible_sudo_pass: Superbon2022
+          ansible_ssh_pass: Superbon202#
+          ansible_sudo_pass: Superbon202#
     ansbile_controllers:
       hosts:
-        ansbile:
+        localhost:
+          ansible_host: 172.20.10.10
           ansible_ssh_user: jonathan
-          ansible_ssh_pass: Superbon2022
-          ansible_sudo_pass: Superbon2022
+          ansible_ssh_pass: Superbon202#
+          ansible_sudo_pass: Superbon202#
