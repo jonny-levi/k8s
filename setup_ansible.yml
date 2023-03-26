@@ -1,5 +1,5 @@
 ---
-- hosts: ansible_controler
+- hosts: ansbile_controllers
   become: true
   vars:
     created_username: jonathan
@@ -14,9 +14,9 @@
       lineinfile:
         path: /etc/sudoers
         state: present
-        regexp: '^%sudo'
-        line: '%sudo ALL=(ALL) NOPASSWD: ALL'
-        validate: '/usr/sbin/visudo -cf %s'
+        regexp: "^%sudo"
+        line: "%sudo ALL=(ALL) NOPASSWD: ALL"
+        validate: "/usr/sbin/visudo -cf %s"
 
     - name: Create a new regular user with sudo privileges
       user:
@@ -36,5 +36,8 @@
       lineinfile:
         path: /etc/ssh/sshd_config
         state: present
-        regexp: '^#?PermitRootLogin'
-        line: 'PermitRootLogin prohibit-password'
+        regexp: "^#?PermitRootLogin"
+        line: "PermitRootLogin prohibit-password"
+
+    - name: Inserting hosts names and IP to hosts file
+      ansible.builtin.shell: for each item in "{{ hosts }}" echo "{{ item }}" "{{ item.address }}" > /etc/hosts
