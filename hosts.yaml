@@ -19,7 +19,7 @@ all:
           ansible_sudo_pass: Superbon2022
     ansbile_controllers:
       hosts:
-        ansbile_controllers:
+        ansbile:
           ansible_ssh_user: jonathan
           ansible_ssh_pass: Superbon2022
           ansible_sudo_pass: Superbon2022
