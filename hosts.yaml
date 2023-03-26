@@ -24,6 +24,6 @@ all:
       hosts:
         localhost:
           ansible_host: 172.20.10.10
-          ansible_ssh_user: jonathan
-          ansible_ssh_pass: Superbon202#
-          ansible_sudo_pass: Superbon202#
+          ansible_ssh_user: 
+          ansible_ssh_pass: 
+          ansible_sudo_pass: 
