@@ -1,12 +1,9 @@
 - name: Set a hostname
   ansible.builtin.hostname:
-    name: worker-node01
-  delegate_to: worker_node01
-
-- name: Set a hostname
-  ansible.builtin.hostname:
-    name: worker-node02
-  delegate_to: worker_node02
+    name: master-node01
+  delegate_to: "{{ item }}"
+  with_items:
+    - "{{ groups.k8s_nodes }}"
 
 - name: Install the package "net-tools"
   ansible.builtin.apt:
