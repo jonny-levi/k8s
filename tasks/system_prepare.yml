@@ -5,10 +5,10 @@
 
 - name: Verifying hostname
   ansible.builtin.debug:
-    msg: hostname_result
+    msg: "{{hostname_result}}"
 
 - name: Inserting hosts names and IP to hosts file
-  ansible.builtin.shell: echo "{{ inventory_hostname | regex_replace('_','-') }}" "{{ item.address }}" > /etc/hosts
+  ansible.builtin.shell: echo "{{ inventory_hostname | regex_replace('_','-') }}" "{{ ansible_host }}" > /etc/hosts
 
 - name: Update all packages
   ansible.builtin.apt:
