@@ -7,6 +7,9 @@
   ansible.builtin.debug:
     msg: hostname_result
 
+- name: Inserting hosts names and IP to hosts file
+  ansible.builtin.shell: echo "{{ hostname_result }}" "{{ item.address }}" > /etc/hosts
+
 - name: Update all packages
   ansible.builtin.apt:
     name: "*"

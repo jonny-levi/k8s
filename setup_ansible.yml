@@ -38,11 +38,3 @@
         state: present
         regexp: "^#?PermitRootLogin"
         line: "PermitRootLogin prohibit-password"
-
-    ##################### Need to finish here!!! #################
- 
-    - name: Inserting hosts names and IP to hosts file
-      ansible.builtin.shell: echo "{{ item }}" "{{ item.address }}" > /etc/hosts
-      with_items: "{{ groups['all'] }}"
-
-    ##############################################################
