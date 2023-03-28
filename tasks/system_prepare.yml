@@ -9,7 +9,7 @@
 
 - name: Inserting hosts names and IP to hosts file
   ansible.builtin.shell: echo "{{ inventory_hostname | regex_replace('_','-') }}" "{{ ansible_host }}" >> /etc/hosts
-  loop: "{{ groups.all }}"
+  loop: "{{ query('inventory_hostnames', 'all') }}"
 
 - name: Update all packages
   ansible.builtin.apt:
