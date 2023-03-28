@@ -1,4 +1,11 @@
 ---
+- hosts: all
+  gather_facts: true
+  become: true
+  pre_tasks:
+    - name: System preperations
+      ansible.builtin.include_tasks: tasks/system_prepare.yml
+
 - hosts: k8s_masters
   gather_facts: true
   become: true

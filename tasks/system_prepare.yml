@@ -1,0 +1,184 @@
+- name: Set a hostname
+  ansible.builtin.hostname:
+    name: "{{ item }}"
+  delegate_to: "{{ item }}"
+  with_items:
+    - "{{ groups.all }}"
+
+- name: Update all packages
+  ansible.builtin.apt:
+    name: "*"
+    state: latest
+
+- name: Installing Java for Jenkins agent
+  ansible.builtin.apt:
+    name: openjdk-11-jre
+
+- name: Install the package "net-tools"
+  ansible.builtin.apt:
+    name: net-tools
+
+- name: Disable swap - Commenting swap from /etc/fstab
+  ansible.builtin.shell: sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+
+- name: Disable swap - Unmounting swap
+  ansible.builtin.shell: sudo swapoff -a
+
+- name: Disable swap - Save mount changes
+  ansible.builtin.shell: sudo mount -a
+
+- name: Disable swap - Release swap
+  ansible.builtin.shell: free -h
+
+- name: Reload sysctl
+  ansible.builtin.shell: sudo sysctl --system
+
+- name: copy containerd file local
+  ansible.builtin.shell: wget https://github.com/containerd/containerd/releases/download/v1.6.14/containerd-1.6.14-linux-amd64.tar.gz
+
+- name: Extract containerd files local
+  ansible.builtin.shell: tar Cxzvf /usr/local containerd-1.6.14-linux-amd64.tar.gz
+
+- name: Containerd settings
+  ansible.builtin.shell: mkdir -p /usr/local/lib/systemd/system/
+
+- name: Containerd settings
+  ansible.builtin.blockinfile:
+    path: /usr/local/lib/systemd/system/containerd.service
+    create: true
+    block: |
+      # Copyright The containerd Authors.
+      #
+      # Licensed under the Apache License, Version 2.0 (the "License");
+      # you may not use this file except in compliance with the License.
+      # You may obtain a copy of the License at
+      #
+      #     http://www.apache.org/licenses/LICENSE-2.0
+      #
+      # Unless required by applicable law or agreed to in writing, software
+      # distributed under the License is distributed on an "AS IS" BASIS,
+      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+      # See the License for the specific language governing permissions and
+      # limitations under the License.
+
+      [Unit]
+      Description=containerd container runtime
+      Documentation=https://containerd.io
+      After=network.target local-fs.target
+
+      [Service]
+      #uncomment to enable the experimental sbservice (sandboxed) version of containerd/cri integration
+      #Environment="ENABLE_CRI_SANDBOXES=sandboxed"
+      ExecStartPre=-/sbin/modprobe overlay
+      ExecStart=/usr/local/bin/containerd
+
+      Type=notify
+      Delegate=yes
+      KillMode=process
+      Restart=always
+      RestartSec=5
+      # Having non-zero Limit*s causes performance problems due to accounting overhead
+      # in the kernel. We recommend using cgroups to do container-local accounting.
+      LimitNPROC=infinity
+      LimitCORE=infinity
+      LimitNOFILE=infinity
+      # Comment TasksMax if your systemd version does not supports it.
+      # Only systemd 226 and above support this version.
+      TasksMax=infinity
+      OOMScoreAdjust=-999
+
+      [Install]
+      WantedBy=multi-user.target
+
+- name: Crictl settings
+  ansible.builtin.blockinfile:
+    path: /etc/crictl.yaml
+    create: true
+    block: |
+      runtime-endpoint: unix:///var/run/containerd/containerd.sock
+      image-endpoint: unix:///var/run/containerd/containerd.sock
+      timeout: 10
+      debug: true
+
+- name: Containerd settings
+  ansible.builtin.shell: mkdir -p /etc/containerd/
+
+- name: Containerd settings
+  ansible.builtin.shell: touch /etc/containerd/config.toml
+
+- name: Containerd settings
+  ansible.builtin.shell: containerd config default > /etc/containerd/config.toml
+
+- name: Reload daemon-reload
+  ansible.builtin.shell: systemctl daemon-reload
+
+- name: Enable containerd service
+  ansible.builtin.shell: systemctl enable --now containerd
+
+- name: copy runc files
+  ansible.builtin.shell: wget https://github.com/opencontainers/runc/releases/download/v1.1.4/runc.amd64
+
+- name: Installing runc
+  ansible.builtin.shell: install -m 755 runc.amd64 /usr/local/sbin/runc
+
+- name: copy CNI plugins files
+  ansible.builtin.shell: wget https://github.com/containernetworking/plugins/releases/download/v1.1.1/cni-plugins-linux-amd64-v1.1.1.tgz
+
+- name: Create runc directory
+  ansible.builtin.shell: mkdir -p /opt/cni/bin
+
+- name: Extracting runc files
+  ansible.builtin.shell: tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.1.1.tgz
+
+- name: Enable systemd cgroup
+  replace:
+    path: /etc/containerd/config.toml
+    regexp: "SystemdCgroup = false"
+    replace: "SystemdCgroup = true"
+
+- name: Restart containerd
+  ansible.builtin.shell: sudo systemctl restart containerd
+
+- name: Enable Kernel Modules
+  ansible.builtin.shell: sudo modprobe overlay
+
+- name: Enable Kernel Modules
+  ansible.builtin.shell: sudo modprobe br_netfilter
+
+- name: Containerd settings
+  ansible.builtin.blockinfile:
+    path: /etc/sysctl.d/kubernetes.conf
+    create: true
+    block: |
+      net.bridge.bridge-nf-call-ip6tables = 1
+      net.bridge.bridge-nf-call-iptables = 1
+      net.ipv4.ip_forward = 1
+
+- name: Reload sysctl
+  ansible.builtin.shell: sudo sysctl --system
+
+- name: Installing kubeadm, kubelet and kubectl - apt update
+  ansible.builtin.shell: sudo apt-get update
+
+- name: Installing kubeadm, kubelet and kubectl - installing prerequisites
+  ansible.builtin.shell: sudo apt-get install -y apt-transport-https ca-certificates curl
+
+- name: Installing kubeadm, kubelet and kubectl - installing prerequisites
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+
+- name: Installing kubeadm, kubelet and kubectl - installing prerequisites
+  ansible.builtin.shell: sudo curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
+- name: Installing kubeadm, kubelet and kubectl - installing prerequisites
+  ansible.builtin.shell: echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+- name: Installing kubeadm, kubelet and kubectl - installing prerequisites
+  ansible.builtin.shell: sudo apt-get update
+
+- name: Installing kubeadm, kubelet and kubectl - installing packages kubelet kubeadm kubectl
+  ansible.builtin.shell: sudo apt-get install -y kubelet kubeadm kubectl
+
+- name: Installing kubeadm, kubelet and kubectl - holding services kubelet kubeadm kubectl
+  ansible.builtin.shell: sudo apt-mark hold kubelet kubeadm kubectl
