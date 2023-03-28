@@ -1,9 +1,6 @@
 - name: Set a hostname
   ansible.builtin.hostname:
-    name: "{{ item | regex_replace('_','-'') }}"
-  delegate_to: "{{ item }}"
-  with_items:
-    - "{{ groups.all }}"
+    name: "{{ ansible_hostname | regex_replace('_','-'') }}"
 
 - name: Update all packages
   ansible.builtin.apt:
