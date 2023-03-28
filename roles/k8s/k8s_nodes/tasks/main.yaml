@@ -3,7 +3,7 @@
     name: master-node01
   delegate_to: "{{ item }}"
   with_items:
-    - "{{ groups.k8s_nodes }}"
+    - "{{ groups.all }}"
 
 - name: Install the package "net-tools"
   ansible.builtin.apt:
