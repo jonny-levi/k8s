@@ -1,6 +1,11 @@
 - name: Set a hostname
   ansible.builtin.hostname:
     name: "{{ inventory_hostname | regex_replace('_','-') }}"
+  register: hostname_result
+
+- name: Verifying hostname
+  ansible.builtin.debug:
+    msg: hostname_result
 
 - name: Update all packages
   ansible.builtin.apt:
