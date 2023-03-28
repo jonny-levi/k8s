@@ -8,7 +8,7 @@
     msg: "{{hostname_result}}"
 
 - name: Inserting hosts names and IP to hosts file
-  linefile:
+  lineinfile:
     dest: /etc/hosts
     line: "{{ hostvars[item]['ansible_hostname'] | regex_replace('_','-') }} {{ hostvars[item]['ansible_default_ipv4']['address'] }} {{ hostvars[item]['inventory_hostname'] | regex_replace('_','-') }}"
     state: present
