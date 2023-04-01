@@ -5,7 +5,7 @@
 - debug:
     var: init_output.stdout_lines
 
-- name: Initializing Kubernetes Cluster - setup configurations
+- name: Creating .kube directory
   ansible.builtin.shell: mkdir -p /home/"{{hostvars['master_node01']['ansible_ssh_user']}}"/.kube
 
 - name: Copy file with owner and permissions
@@ -17,6 +17,10 @@
     mode: "0755"
     remote_src: yes
   become: true
+
+- name: Verifying if directory is created
+  ansible.builtin.debug:
+    msg: cd /home/"{{hostvars['master_node01']['ansible_ssh_user']}}"/
 
 - name: Initializing Kubernetes Cluster
   ansible.builtin.shell: kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml

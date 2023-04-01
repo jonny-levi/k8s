@@ -1,9 +1,9 @@
-- name: Set a hostname
+- name: Set a hostname for all hosts
   ansible.builtin.hostname:
     name: "{{ inventory_hostname | regex_replace('_','-') }}"
   register: hostname_result
 
-- name: Verifying hostname
+- name: Verifying hostname for all hosts
   ansible.builtin.debug:
     msg: "{{hostname_result}}"
 
@@ -48,10 +48,10 @@
 - name: Extract containerd files local
   ansible.builtin.shell: tar Cxzvf /usr/local containerd-1.6.14-linux-amd64.tar.gz
 
-- name: Containerd settings
+- name: Containerd settings - creating directory for containerd
   ansible.builtin.shell: mkdir -p /usr/local/lib/systemd/system/
 
-- name: Containerd settings
+- name: Containerd settings - copy configuration into the new directory for containerd
   ansible.builtin.blockinfile:
     path: /usr/local/lib/systemd/system/containerd.service
     create: true
@@ -99,7 +99,7 @@
       [Install]
       WantedBy=multi-user.target
 
-- name: Crictl settings
+- name: Crictl settings - set default runtime crictl
   ansible.builtin.blockinfile:
     path: /etc/crictl.yaml
     create: true
@@ -109,13 +109,13 @@
       timeout: 10
       debug: true
 
-- name: Containerd settings
+- name: Containerd settings - creating directory for containerd
   ansible.builtin.shell: mkdir -p /etc/containerd/
 
-- name: Containerd settings
+- name: Containerd settings - creating default file for containerd
   ansible.builtin.shell: touch /etc/containerd/config.toml
 
-- name: Containerd settings
+- name: Containerd settings - copy configuration to config.toml
   ansible.builtin.shell: containerd config default > /etc/containerd/config.toml
 
 - name: Reload daemon-reload
@@ -154,7 +154,7 @@
 - name: Enable Kernel Modules
   ansible.builtin.shell: sudo modprobe br_netfilter
 
-- name: Containerd settings
+- name: Containerd settings - iptables configurations
   ansible.builtin.blockinfile:
     path: /etc/sysctl.d/kubernetes.conf
     create: true
@@ -177,13 +177,13 @@
     path: /etc/apt/keyrings
     state: directory
 
-- name: Installing kubeadm, kubelet and kubectl - installing prerequisites
+- name: Installing kubeadm, kubelet and kubectl - adding google repository keys
   ansible.builtin.shell: sudo curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
 
-- name: Installing kubeadm, kubelet and kubectl - installing prerequisites
+- name: Installing kubeadm, kubelet and kubectl - adding google to the sources.list
   ansible.builtin.shell: echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
-- name: Installing kubeadm, kubelet and kubectl - installing prerequisites
+- name: Installing kubeadm, kubelet and kubectl - update all packages
   ansible.builtin.shell: sudo apt-get update
 
 - name: Installing kubeadm, kubelet and kubectl - installing packages kubelet kubeadm kubectl
