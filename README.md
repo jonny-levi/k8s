@@ -48,8 +48,9 @@ Creating virtual machines
 Currently this Ansible automation is tested on Ubuntu 18.04 and Ubuntu 22.04.
 
 1. Download Ubuntu iso and create at least 3 virtual-machines.
-2. Assign 3 different IP address for each vm.
-3. Name the vm machines accordingly (ansible, worker-node-xxxx, master-node-xxxx)
+2. Assign IP address for each vm.
+3. Creat same user and password for each vm.
+4. Ansible will name the vm according the hosts.yml file in the inventory directory (ansible, worker-node-xxxx, master-node-xxxx)
 
 *************************   
 Installing Ansible server
@@ -63,13 +64,11 @@ Downloading the repo to Ansible server
 *************************
 
 1. git clone https://github.com/jonny-levi/k8s.git
+2. cd k8s
+3. Edit inventory/hosts.yml - fulfill the file accordingly.
+4. ansible-playbook site.yml -i inventory/
 
 
-*************************
-Initialize K8s cluster
-*************************
-
-1. Fullfil the hosts.yaml in the k8s directory.
 
 
 
