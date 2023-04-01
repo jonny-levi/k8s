@@ -12,7 +12,7 @@
 - name: Copy file with owner and permissions
   ansible.builtin.copy:
     src: /etc/kubernetes/admin.conf
-    dest: /home/"{{hostvars['master_node01']['ansible_ssh_user']}}"/.kube/config
+    dest: /home/{{hostvars['master_node01']['ansible_ssh_user']}}/.kube/config
     owner: "{{hostvars['master_node01']['ansible_ssh_user']}}"
     group: "{{hostvars['master_node01']['ansible_ssh_user']}}"
     mode: "0755"
