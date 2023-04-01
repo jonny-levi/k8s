@@ -43,7 +43,7 @@
 # k8s 1.26.3 cluster deployment
 
 *************************
-💻 Creating virtual machines  
+🖥 Creating virtual machines  
 *************************
 
 Currently this Ansible automation is tested on Ubuntu 18.04 and Ubuntu 22.04.
