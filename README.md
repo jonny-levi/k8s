@@ -17,6 +17,7 @@
 - 💻 &nbsp; Python | JavaScript | JAVA | Bash  
 - 🌐 &nbsp;  HTML | CSS | JavaScript 
 - 🛢 &nbsp; K8s | Jenkins | Terraform | Ansible | Puppet | Chef
+- ☁ &nbsp; AWS | GCP | Azure 
 - 🔧 &nbsp;  Pycharm | Visual Studio code  | Git
 
 
