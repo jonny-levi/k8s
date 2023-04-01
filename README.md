@@ -39,10 +39,10 @@
 
 
 
-# k8s cluster deployment
+# k8s 1.26.3 cluster deployment
 
 *************************
-Creating virtual machines  
+💻 Creating virtual machines  
 *************************
 
 Currently this Ansible automation is tested on Ubuntu 18.04 and Ubuntu 22.04.
@@ -53,14 +53,14 @@ Currently this Ansible automation is tested on Ubuntu 18.04 and Ubuntu 22.04.
 4. Ansible will name the vm according the hosts.yml file in the inventory directory (ansible, worker-node-xxxx, master-node-xxxx)
 
 *************************   
-Installing Ansible server
+🔨 Installing Ansible server
 *************************
 
 1. sudo apt update
 2. sudo apt install ansible
 
 *************************   
-Downloading the repo to Ansible server    
+🔽 Downloading the repo to Ansible server    
 *************************
 
 1. git clone https://github.com/jonny-levi/k8s.git
@@ -71,5 +71,6 @@ Downloading the repo to Ansible server
 
 
 
+Enjoy!
 
 Author: Jonathan Levi
