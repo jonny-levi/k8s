@@ -1,0 +1,29 @@
+all:
+  hosts:
+  children:
+    k8s_masters:
+      hosts:
+        master_node01:
+          ansible_host: 172.20.10.11
+          ansible_ssh_user: 
+          ansible_ssh_pass: 
+          ansible_sudo_pass: 
+    k8s_nodes:
+      hosts:
+        worker_node01:
+          ansible_host: 172.20.10.12
+          ansible_ssh_user: 
+          ansible_ssh_pass: 
+          ansible_sudo_pass: 
+        worker_node02:
+          ansible_host: 172.20.10.13
+          ansible_ssh_user: 
+          ansible_ssh_pass: 
+          ansible_sudo_pass: 
+    ansbile_controllers:
+      hosts:
+        localhost:
+          ansible_host: 172.20.10.10
+          ansible_ssh_user: 
+          ansible_ssh_pass: 
+          ansible_sudo_pass: 
