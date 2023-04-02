@@ -39,7 +39,7 @@
 - name: Disable swap - Release swap
   ansible.builtin.shell: free -h
 
-- name: Reload sysctl
+- name: Reload sysctlcscs
   ansible.builtin.shell: sudo sysctl --system
 
 - name: copy containerd file local
