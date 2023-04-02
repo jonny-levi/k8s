@@ -1,0 +1,2 @@
+join_token: ***REMOVED***
+container_runtime: unix:///run/containerd/containerd.sock
