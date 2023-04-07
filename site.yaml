@@ -28,7 +28,6 @@
 
 - hosts: k8s_masters
   gather_facts: true
-  become: true
   pre_tasks:
     - name: vSphere-CSI
       ansible.builtin.include_tasks: tasks/vSphere-CSI.yml
