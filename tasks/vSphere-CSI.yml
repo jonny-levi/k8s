@@ -1,3 +1,9 @@
+- name: Verifying cluster is up and functioning
+  ansible.builtin.shell: kubectl get nodes
+  register: cluster_results
+  retries: 10
+  until: cluster_results.rc == 0
+
 - name: prerequisites - preparing infrastracture - vSphere-CSI storage driver
   ansible.builtin.shell: kubectl apply -f roles/k8s/k8s_masters/vsphere-csi/storageClass.yml
 
