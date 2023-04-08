@@ -187,7 +187,7 @@
   ansible.builtin.shell: sudo apt-get update
 
 - name: Installing kubeadm, kubelet and kubectl - installing packages kubelet kubeadm kubectl
-  ansible.builtin.shell: sudo apt-get install -y kubelet=1.25.0-00 kubeadm=1.25.0-00 kubectl=1.25.0-00
+  ansible.builtin.shell: sudo apt-get install -y kubelet kubeadm kubectl
 
 - name: Installing kubeadm, kubelet and kubectl - holding services kubelet kubeadm kubectl
   ansible.builtin.shell: sudo apt-mark hold kubelet kubeadm kubectl
