@@ -8,7 +8,6 @@
   ansible.builtin.copy:
     src: ~/k8s/roles/k8s/k8s_masters/vsphere-csi
     dest: ~/vsphere-csi
-    remote_src: yes
 
 - name: prerequisites - preparing infrastracture - vSphere-CSI storage driver
   ansible.builtin.shell: kubectl apply -f ~/vsphere-csi/storageClass.yml
