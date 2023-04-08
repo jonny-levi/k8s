@@ -36,7 +36,9 @@
     create: true
 
 - name: Initializing vSphere-CSI storage controller
-  ansible.builtin.shell: cd ~/vsphere-csi/ | kubectl create secret generic vsphere-config-secret --from-file=csi-vsphere.conf --namespace=vmware-system-csi
+  ansible.builtin.shell: |
+    cd ~/vsphere-csi/ 
+    kubectl create secret generic vsphere-config-secret --from-file=csi-vsphere.conf --namespace=vmware-system-csi
 
 - name: Initializing vSphere-CSI storage controller
   ansible.builtin.shell: $ kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/vsphere-csi-driver/v2.7.0/manifests/vanilla/vsphere-csi-driver.yaml
