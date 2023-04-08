@@ -7,7 +7,7 @@
 - name: Copy a directory containing configuration to remote host
   ansible.builtin.copy:
     src: ~/k8s/roles/k8s/k8s_masters/vsphere-csi
-    dest: ~/vsphere-csi
+    dest: ~/
 
 - name: prerequisites - preparing infrastracture - vSphere-CSI storage driver
   ansible.builtin.shell: kubectl apply -f ~/vsphere-csi/storageClass.yml
