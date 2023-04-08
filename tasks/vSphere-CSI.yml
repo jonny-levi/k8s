@@ -33,6 +33,7 @@
       user = "<username>"
       password = "<password>"
       port = "443"
+    create: true
 
 - name: Initializing vSphere-CSI storage controller
   ansible.builtin.shell: kubectl create secret generic vsphere-config-secret --from-file=~/vsphere-csi/csi-vsphere.conf --namespace=vmware-system-csi
