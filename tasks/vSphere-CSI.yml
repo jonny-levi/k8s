@@ -4,18 +4,24 @@
   retries: 10
   until: cluster_results.rc == 0
 
+- name: Copy a directory containing configuration to remote host
+  ansible.builtin.copy:
+    src: roles/k8s/k8s_masters/vsphere-csi
+    dest: ~/vsphere-csi
+    remote_src: yes
+
 - name: prerequisites - preparing infrastracture - vSphere-CSI storage driver
-  ansible.builtin.shell: kubectl apply -f roles/k8s/k8s_masters/vsphere-csi/storageClass.yml
+  ansible.builtin.shell: kubectl apply -f ~/vsphere-csi/storageClass.yml
 
 - name: prerequisites - preparing infrastracture - vSphere-CSI storage controller
-  ansible.builtin.shell: kubectl apply -f roles/k8s/k8s_masters/vsphere-csi/vsphere-cloud-controller-manager.yaml
+  ansible.builtin.shell: kubectl apply -f ~/vsphere-csi/vsphere-cloud-controller-manager.yaml
 
 - name: prerequisites - preparing infrastracture - vSphere-CSI storage controller - creating namespace
   ansible.builtin.shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/vsphere-csi-driver/v2.7.0/manifests/vanilla/namespace.yaml
 
 - name: Initializing vSphere-CSI storage controller
   ansible.builtin.blockinfile:
-    path: roles/k8s/k8s_masters/vsphere-csi/csi-vsphere.conf
+    path: ~/vsphere-csi/csi-vsphere.conf
     block: |
       [Global]
       cluster-id = "<cluster-id>"
@@ -30,7 +36,7 @@
       port = "443"
 
 - name: Initializing vSphere-CSI storage controller
-  ansible.builtin.shell: kubectl create secret generic vsphere-config-secret --from-file=csi-vsphere.conf --namespace=vmware-system-csi
+  ansible.builtin.shell: kubectl create secret generic vsphere-config-secret --from-file=~/vsphere-csi/csi-vsphere.conf --namespace=vmware-system-csi
 
 - name: Initializing vSphere-CSI storage controller
   ansible.builtin.shell: $ kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/vsphere-csi-driver/v2.7.0/manifests/vanilla/vsphere-csi-driver.yaml
