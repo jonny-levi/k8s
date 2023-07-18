@@ -147,7 +147,7 @@
     mode: "775"
 
 - name: Installing runc
-  ansible.builtin.shell: install -m 755 runc.amd64 /usr/local/sbin/runc
+  ansible.builtin.shell: install -m 755 ~/runc.amd64 /usr/local/sbin/runc
 
 - name: copy CNI plugins files
   ansible.builtin.shell: wget https://github.com/containernetworking/plugins/releases/download/v1.1.1/cni-plugins-linux-amd64-v1.1.1.tgz
