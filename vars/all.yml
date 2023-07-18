@@ -2,3 +2,4 @@ join_token: v80n8z.wuep8jgbr7r0btnj
 container_runtime: unix:///run/containerd/containerd.sock
 runc_latest_version: v1.1.7
 containerd_lastest_version: 1.7.2
+cni_plugin_version: v1.3.0
