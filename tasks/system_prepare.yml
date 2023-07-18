@@ -45,14 +45,26 @@
 - name: Reload sysctlcscs
   ansible.builtin.shell: sudo sysctl --system
 
+# - name: copy containerd file local
+#   ansible.builtin.shell: wget https://github.com/containerd/containerd/releases/download/v1.6.14/containerd-1.6.14-linux-amd64.tar.gz
+
 - name: copy containerd file local
-  ansible.builtin.shell: wget https://github.com/containerd/containerd/releases/download/v1.6.14/containerd-1.6.14-linux-amd64.tar.gz
+  ansible.builtin.get_url:
+    url: "https://github.com/containerd/containerd/releases/download/v{{ containerd_lastest_version }}/containerd-{{ containerd_lastest_version }}-linux-amd64.tar.gz"
+    dest: ~/
+    mode: "775"
 
 - name: Extract containerd files local
   ansible.builtin.shell: tar Cxzvf /usr/local containerd-1.6.14-linux-amd64.tar.gz
 
+# - name: Containerd settings - creating directory for containerd
+#   ansible.builtin.shell: mkdir -p /usr/local/lib/systemd/system/
+
 - name: Containerd settings - creating directory for containerd
-  ansible.builtin.shell: mkdir -p /usr/local/lib/systemd/system/
+  ansible.builtin.file:
+    path: /usr/local/lib/systemd/system/
+    state: directory
+    mode: "0755"
 
 - name: Containerd settings - copy configuration into the new directory for containerd
   ansible.builtin.blockinfile:
