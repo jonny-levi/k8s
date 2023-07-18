@@ -51,9 +51,6 @@
     dest: /tmp
     mode: "775"
 
-# - name: Extract containerd files local
-#   ansible.builtin.shell: "tar Cxzvf /usr/local ~/containerd-{{ containerd_lastest_version }}-linux-amd64.tar.gz"
-
 - name: Extract containerd files local
   ansible.builtin.unarchive:
     src: /tmp/containerd-{{ containerd_lastest_version }}-linux-amd64.tar.gz
@@ -124,17 +121,11 @@
       timeout: 10
       debug: true
 
-# - name: Containerd settings - creating directory for containerd
-#   ansible.builtin.shell: mkdir -p /etc/containerd/
-
 - name: Containerd settings - creating directory for containerd
   ansible.builtin.file:
     path: /etc/containerd/
     state: directory
     mode: "0755"
-
-# - name: Containerd settings - creating default file for containerd
-#   ansible.builtin.shell: touch /etc/containerd/config.toml
 
 - name: Containerd settings - creating default file for containerd
   ansible.builtin.file:
@@ -163,9 +154,6 @@
 - name: Installing runc
   ansible.builtin.shell: install -m 755 /tmp/runc.amd64 /usr/local/sbin/runc
 
-# - name: copy CNI plugins files
-#   ansible.builtin.shell: wget https://github.com/containernetworking/plugins/releases/download/{{ cni_plugin_version }}/cni-plugins-linux-amd64-{{ cni_plugin_version }}.tgz
-
 - name: Download CNI plugins files
   ansible.builtin.get_url:
     url: "https://github.com/containernetworking/plugins/releases/download/{{ cni_plugin_version }}/cni-plugins-linux-amd64-{{ cni_plugin_version }}.tgz"
@@ -178,9 +166,6 @@
     state: directory
     mode: "0755"
 
-# - name: Extracting runc files
-#   ansible.builtin.shell: tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.1.1.tgz
-
 - name: Extracting cni files
   ansible.builtin.unarchive:
     src: "/tmp/cni-plugins-linux-amd64-{{ cni_plugin_version }}.tgz"
@@ -192,9 +177,6 @@
     path: /etc/containerd/config.toml
     regexp: "SystemdCgroup = false"
     replace: "SystemdCgroup = true"
-
-# - name: Restart containerd
-#   ansible.builtin.shell: sudo systemctl restart containerd
 
 - name: Restart service containerd
   ansible.builtin.service:
