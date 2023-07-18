@@ -121,14 +121,30 @@
 - name: Containerd settings - copy configuration to config.toml
   ansible.builtin.shell: containerd config default > /etc/containerd/config.toml
 
+# - name: Reload daemon-reload
+#   ansible.builtin.shell: systemctl daemon-reload
+
 - name: Reload daemon-reload
-  ansible.builtin.shell: systemctl daemon-reload
+  ansible.builtin.systemd:
+    daemon_reload: true
 
-- name: Enable containerd service
-  ansible.builtin.shell: systemctl enable --now containerd
+# - name: Enable containerd service
+#   ansible.builtin.shell: systemctl enable --now containerd
 
-- name: copy runc files
-  ansible.builtin.shell: wget https://github.com/opencontainers/runc/releases/download/v1.1.4/runc.amd64
+- name: Enable service httpd, and not touch the state
+  ansible.builtin.service:
+    name: containerd
+    enabled: yes
+    state: started
+
+# - name: copy runc files
+#   ansible.builtin.shell: wget https://github.com/opencontainers/runc/releases/download/v1.1.7/runc.amd64
+
+- name: Download foo.conf
+  ansible.builtin.get_url:
+    url: "https://github.com/opencontainers/runc/releases/download/{{ runc_latest_version }}/runc.amd64"
+    dest: ~/
+    mode: "775"
 
 - name: Installing runc
   ansible.builtin.shell: install -m 755 runc.amd64 /usr/local/sbin/runc
@@ -169,11 +185,23 @@
 - name: Reload sysctl
   ansible.builtin.shell: sudo sysctl --system
 
-- name: Installing kubeadm, kubelet and kubectl - apt update
-  ansible.builtin.shell: sudo apt-get update
+# - name: Installing kubeadm, kubelet and kubectl - apt update
+#   ansible.builtin.shell: sudo apt-get update
 
-- name: Installing kubeadm, kubelet and kubectl - installing prerequisites
-  ansible.builtin.shell: sudo apt-get install -y apt-transport-https ca-certificates curl
+- name: Update all packages to their latest version
+  ansible.builtin.apt:
+    name: "*"
+    state: latest
+
+# - name: Installing kubeadm, kubelet and kubectl - installing prerequisites
+#   ansible.builtin.shell: sudo apt-get install -y apt-transport-https ca-certificates curl
+
+- name: Install a list prerequisites for the k8s cluster
+  ansible.builtin.apt:
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
 
 - name: Installing kubeadm, kubelet and kubectl - installing prerequisites
   file:
@@ -191,11 +219,23 @@
 - name: Installing kubeadm, kubelet and kubectl - adding google to the sources.list
   ansible.builtin.shell: echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
-- name: Installing kubeadm, kubelet and kubectl - update all packages
-  ansible.builtin.shell: sudo apt-get update
+# - name: Installing kubeadm, kubelet and kubectl - update all packages
+#   ansible.builtin.shell: sudo apt-get update
 
-- name: Installing kubeadm, kubelet and kubectl - installing packages kubelet kubeadm kubectl
-  ansible.builtin.shell: sudo apt-get install -y kubelet kubeadm kubectl
+- name: Update all packages to their latest version
+  ansible.builtin.apt:
+    name: "*"
+    state: latest
+
+# - name: Installing kubeadm, kubelet and kubectl - installing packages kubelet kubeadm kubectl
+#   ansible.builtin.shell: sudo apt-get install -y kubelet kubeadm kubectl
+
+- name: Install a list prerequisites for the k8s cluster
+  ansible.builtin.apt:
+    pkg:
+      - kubelet
+      - kubeadm
+      - kubectl
 
 - name: Installing kubeadm, kubelet and kubectl - holding services kubelet kubeadm kubectl
   ansible.builtin.shell: sudo apt-mark hold kubelet kubeadm kubectl
