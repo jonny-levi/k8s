@@ -55,7 +55,7 @@
     mode: "775"
 
 - name: Extract containerd files local
-  ansible.builtin.shell: tar Cxzvf /usr/local containerd-1.6.14-linux-amd64.tar.gz
+  ansible.builtin.shell: "tar Cxzvf /usr/local ~/containerd-{{ containerd_lastest_version }}-linux-amd64.tar.gz"
 
 # - name: Containerd settings - creating directory for containerd
 #   ansible.builtin.shell: mkdir -p /usr/local/lib/systemd/system/
