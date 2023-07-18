@@ -180,8 +180,13 @@
     path: /etc/apt/keyrings
     state: directory
 
+- name: Update the apt package index and install packages needed to use the Kubernetes apt repository
+  ansible.builtin.shell: sudo apt-get install -y apt-transport-https ca-certificates curl
+# - name: Installing kubeadm, kubelet and kubectl - adding google repository keys
+#   ansible.builtin.shell: sudo curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
 - name: Installing kubeadm, kubelet and kubectl - adding google repository keys
-  ansible.builtin.shell: sudo curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+  ansible.builtin.shell: sudo curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg
 
 - name: Installing kubeadm, kubelet and kubectl - adding google to the sources.list
   ansible.builtin.shell: echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
@@ -190,7 +195,7 @@
   ansible.builtin.shell: sudo apt-get update
 
 - name: Installing kubeadm, kubelet and kubectl - installing packages kubelet kubeadm kubectl
-  ansible.builtin.shell: sudo apt-get install -y kubelet=1.24.0-00 kubeadm=1.24.0-00 kubectl=1.24.0-00
+  ansible.builtin.shell: sudo apt-get install -y kubelet kubeadm kubectl
 
 - name: Installing kubeadm, kubelet and kubectl - holding services kubelet kubeadm kubectl
   ansible.builtin.shell: sudo apt-mark hold kubelet kubeadm kubectl
