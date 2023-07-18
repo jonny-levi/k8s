@@ -5,6 +5,8 @@
   gather_facts: true
   become: true
   pre_tasks:
+    - name: variables
+      ansible.builtin.include_vars: vars/all.yml
     - name: System preperations
       ansible.builtin.include_tasks: tasks/system_prepare.yml
 

@@ -131,7 +131,7 @@
 # - name: Enable containerd service
 #   ansible.builtin.shell: systemctl enable --now containerd
 
-- name: Enable service httpd, and not touch the state
+- name: Enable containerd service
   ansible.builtin.service:
     name: containerd
     enabled: yes
@@ -140,7 +140,7 @@
 # - name: copy runc files
 #   ansible.builtin.shell: wget https://github.com/opencontainers/runc/releases/download/v1.1.7/runc.amd64
 
-- name: Download foo.conf
+- name: Download runc
   ansible.builtin.get_url:
     url: "https://github.com/opencontainers/runc/releases/download/{{ runc_latest_version }}/runc.amd64"
     dest: ~/
