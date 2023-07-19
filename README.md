@@ -40,7 +40,7 @@
 
 
 
-# k8s 1.26.3 cluster deployment
+# k8s cluster deployment
 
 *************************
 🖥 Creating virtual machines  
