@@ -23,6 +23,27 @@
   ansible.builtin.debug:
     msg: cd /home/"{{hostvars['master_node01']['ansible_ssh_user']}}"/
 
-- name: Initializing Kubernetes Cluster
+- name: Installing Helm
+  ansible.builtin.shell: |
+    curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+    sudo apt-get install apt-transport-https --yes
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+    sudo apt-get update
+    sudo apt-get install helm
+  become: true
+
+- name: Initializing Kubernetes Cluster CNI - A
   ansible.builtin.shell: kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
   become_user: "{{hostvars['master_node01']['ansible_ssh_user']}}"
+
+
+  #- name: Initializing Kubernetes Cluster CNI - A 
+  #  ansible.builtin.shell: |
+  #    helm repo add projectcalico https://docs.tigera.io/calico/charts  #kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
+  #    kubectl create namespace tigera-operator
+  #    helm install calico projectcalico/tigera-operator --version v3.26.3 --namespace tigera-operator
+  #  become_user: "{{hostvars['master_node01']['ansible_ssh_user']}}"
+
+  #- name: Initializing Kubernetes Cluster CNI - B
+  #  ansible.builtin.shell: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.3/manifests/custom-resources.yaml
+  #  become_user: "{{hostvars['master_node01']['ansible_ssh_user']}}"

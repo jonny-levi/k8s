@@ -19,7 +19,7 @@ metadata:
   # NOTE: this is just an example configuration, update with real values based on your environment
 stringData:
   172.20.10.84.username: "administrator@vsphere.local"
-  172.20.10.84.password: "use-your-vcenter-password-here"
+  172.20.10.84.password: "Superbon202#"
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -46,7 +46,7 @@ data:
       your-vcenter-name-here:
         server: 172.20.10.84
         user: administrator@vsphere.local
-        password: use-your-vcenter-password-here
+        password: Superbon202#"
         datacenters:
           - Lab-cluster
       could-be-a-tenant-label:
