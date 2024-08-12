@@ -14,6 +14,9 @@
     state: present
   with_items: "{{ play_hosts }}"
 
+- name: Update all packages using shell
+  ansible.builtin.shell: sudo apt update -y && sudo apt upgrade -y
+
 - name: Update all packages
   ansible.builtin.apt:
     name: "*"
@@ -212,6 +215,7 @@
       - apt-transport-https
       - ca-certificates
       - curl
+      - nfs-common
 
 - name: Installing kubeadm, kubelet and kubectl - installing prerequisites
   file:
