@@ -49,8 +49,6 @@ data:
         password: Superbon202#"
         datacenters:
           - Lab-cluster
-        datastore: datastore1  
-        workingDir: /kubernetes 
       could-be-a-tenant-label:
         server: 172.20.10.84
         datacenters:
