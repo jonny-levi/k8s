@@ -9,6 +9,14 @@
     src: ~/k8s/roles/k8s/k8s_masters/vsphere-csi
     dest: ~/
 
+- name: Get list of all nodes
+  command: kubectl get nodes -o name
+  register: node_list
+
+- name: Taint all nodes
+  shell: kubectl taint {{ item }} node.cloudprovider.kubernetes.io/uninitialized=true:NoSchedule
+  with_items: "{{ node_list.stdout_lines }}"
+
 - name: prerequisites - preparing infrastracture - vSphere-CSI storage driver
   ansible.builtin.shell: kubectl apply -f ~/vsphere-csi/storageClass.yml
 
@@ -16,7 +24,7 @@
   ansible.builtin.shell: kubectl apply -f ~/vsphere-csi/vsphere-cloud-controller-manager.yaml
 
 - name: prerequisites - preparing infrastracture - vSphere-CSI storage controller - creating namespace
-  ansible.builtin.shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/vsphere-csi-driver/v2.7.0/manifests/vanilla/namespace.yaml
+  ansible.builtin.shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/vsphere-csi-driver/v3.3.0/manifests/vanilla/namespace.yaml
 
 - name: Initializing vSphere-CSI storage controller
   ansible.builtin.blockinfile:
@@ -41,7 +49,7 @@
     kubectl create secret generic vsphere-config-secret --from-file=csi-vsphere.conf --namespace=vmware-system-csi
 
 - name: Initializing vSphere-CSI storage controller
-  ansible.builtin.shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/vsphere-csi-driver/v2.7.0/manifests/vanilla/vsphere-csi-driver.yaml
+  ansible.builtin.shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/vsphere-csi-driver/v3.3.0/manifests/vanilla/vsphere-csi-driver.yaml
 
   #- name: Initializing vSphere-CSI Cloud Controller Manager
-  # ansible.builtin.shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/cloud-provider-vsphere/release-{{ kubernetes_major_version }}/releases/v{{ kubernetes_major_version }}/vsphere-cloud-controller-manager.yaml 
+  # ansible.builtin.shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/cloud-provider-vsphere/release-{{ kubernetes_major_version }}/releases/v{{ kubernetes_major_version }}/vsphere-cloud-controller-manager.yaml
