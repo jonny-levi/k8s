@@ -16,6 +16,7 @@
 - name: Taint all nodes
   shell: kubectl taint {{ item }} node.cloudprovider.kubernetes.io/uninitialized=true:NoSchedule
   with_items: "{{ node_list.stdout_lines }}"
+  ignore_errors: true
 
 - name: prerequisites - preparing infrastracture - vSphere-CSI storage driver
   ansible.builtin.shell: kubectl apply -f ~/vsphere-csi/storageClass.yml
