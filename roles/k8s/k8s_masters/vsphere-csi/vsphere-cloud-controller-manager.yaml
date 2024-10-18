@@ -46,7 +46,7 @@ data:
       your-vcenter-name-here:
         server: 172.20.10.84
         user: administrator@vsphere.local
-        password: ***REMOVED***"
+        password: ***REMOVED***
         datacenters:
           - Lab-cluster
       could-be-a-tenant-label:
