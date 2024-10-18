@@ -46,7 +46,7 @@ data:
       your-vcenter-name-here:
         server: 172.20.10.84
         user: administrator@vsphere.local
-        password: Superbon202#"
+        password: Superbon202#
         datacenters:
           - Lab-cluster
       could-be-a-tenant-label:
