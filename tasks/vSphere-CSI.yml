@@ -64,8 +64,7 @@
     replace: 'registry.k8s.io/csi-vsphere/syncer:v3.3.1'
 
 - name: Display the updated YAML file
-  ansible.builtin.shell:
-    cmd: cat ~/vsphere-csi/vsphere-csi-driver.yaml
+  ansible.builtin.shell: cat ~/vsphere-csi/vsphere-csi-driver.yaml
   register: result
 
 - name: Show updated content
