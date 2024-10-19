@@ -66,7 +66,7 @@
 - name: Display the updated YAML file
   ansible.builtin.shell:
     cmd: cat ~/vsphere-csi/vsphere-csi-driver.yaml
-    register: result
+  register: result
 
 - name: Show updated content
   ansible.builtin.debug:
