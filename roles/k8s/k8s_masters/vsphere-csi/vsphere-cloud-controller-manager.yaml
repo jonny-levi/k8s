@@ -48,11 +48,11 @@ data:
         user: administrator@vsphere.local
         password: Superbon202#
         datacenters:
-          - Lab-cluster
+          - Datacenter
       could-be-a-tenant-label:
         server: 172.20.10.84
         datacenters:
-          - Lab-cluster
+          - Datacenter
         secretName: cpi-engineering-secret
         secretNamespace: kube-system
 
