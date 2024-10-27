@@ -75,3 +75,5 @@ Currently this Ansible automation is tested on Ubuntu 18.04 and Ubuntu 22.04.
 Enjoy!
 
 Author: Jonathan Levi
+
+v1.24
