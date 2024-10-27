@@ -25,7 +25,7 @@
   ansible.builtin.shell: kubectl apply -f ~/vsphere-csi/vsphere-cloud-controller-manager.yaml
 
 - name: prerequisites - preparing infrastracture - vSphere-CSI storage controller - creating namespace
-  ansible.builtin.shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/vsphere-csi-driver/v3.3.0/manifests/vanilla/namespace.yaml
+  ansible.builtin.shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/vsphere-csi-driver/v3.3.1/manifests/vanilla/namespace.yaml
 
 - name: Initializing vSphere-CSI storage controller
   ansible.builtin.blockinfile:
@@ -42,6 +42,12 @@
       user = "administrator@vsphere.local"
       password = "Superbon202#"
       port = "443"
+
+      [Workspace]
+      server = "172.20.10.84"    
+      datacenter = "Datacenter"  
+      folder = "datastore1/kubernetes" 
+      default-datastore = "datastore1"
     create: true
 
 - name: Initializing vSphere-CSI storage controller
@@ -49,8 +55,33 @@
     cd ~/vsphere-csi/ 
     kubectl create secret generic vsphere-config-secret --from-file=csi-vsphere.conf --namespace=vmware-system-csi
 
+- name: Download the vSphere CSI Driver manifest
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/kubernetes-sigs/vsphere-csi-driver/v3.3.1/manifests/vanilla/vsphere-csi-driver.yaml
+    dest: ~/vsphere-csi/vsphere-csi-driver.yaml
+
+- name: Replace the CSI driver image
+  ansible.builtin.replace:
+    path: ~/vsphere-csi/vsphere-csi-driver.yaml
+    regexp: 'gcr\.io/cloud-provider-vsphere/csi/release/driver:v3\.3\.1'
+    replace: "registry.k8s.io/csi-vsphere/driver:v3.3.1"
+
+- name: Replace the CSI syncer image
+  ansible.builtin.replace:
+    path: ~/vsphere-csi/vsphere-csi-driver.yaml
+    regexp: 'gcr\.io/cloud-provider-vsphere/csi/release/syncer:v3\.3\.1'
+    replace: "registry.k8s.io/csi-vsphere/syncer:v3.3.1"
+
+- name: Display the updated YAML file
+  ansible.builtin.shell: cat ~/vsphere-csi/vsphere-csi-driver.yaml
+  register: result
+
+- name: Show updated content
+  ansible.builtin.debug:
+    msg: "{{ result.stdout }}"
+
 - name: Initializing vSphere-CSI storage controller
-  ansible.builtin.shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/vsphere-csi-driver/v3.3.0/manifests/vanilla/vsphere-csi-driver.yaml
+  ansible.builtin.shell: kubectl apply -f ~/vsphere-csi/vsphere-csi-driver.yaml
 
   #- name: Initializing vSphere-CSI Cloud Controller Manager
   # ansible.builtin.shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/cloud-provider-vsphere/release-{{ kubernetes_major_version }}/releases/v{{ kubernetes_major_version }}/vsphere-cloud-controller-manager.yaml
