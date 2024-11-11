@@ -135,6 +135,18 @@
     path: /etc/containerd/config.toml
     state: touch
 
+- name: Update containerd config.toml to ignore TLS for specific registry
+  ansible.builtin.lineinfile:
+    path: /etc/containerd/config.toml
+    regexp: '^\[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.configs\]'
+    line: |
+      [plugins."io.containerd.grpc.v1.cri".registry.configs."172.20.10.20:31212".tls]
+        insecure_skip_verify = true
+    state: present
+    backrefs: yes
+    insertafter: EOF
+  notify: Restart containerd
+
 - name: Containerd settings - copy configuration to config.toml
   ansible.builtin.shell: containerd config default > /etc/containerd/config.toml
 
