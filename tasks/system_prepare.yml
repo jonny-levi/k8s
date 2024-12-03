@@ -216,6 +216,9 @@
 - name: Reload sysctl
   ansible.builtin.shell: sudo sysctl --system
 
+- name: Reload sysctl
+  ansible.builtin.shell: timedatectl set-timezone Asia/Jerusalem
+
 - name: Update all packages to their latest version
   ansible.builtin.apt:
     name: "*"
