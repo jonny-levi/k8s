@@ -1,44 +1,44 @@
 ---
-- hosts:
-    - k8s_masters
-    - k8s_nodes
-  gather_facts: true
-  become: true
-  pre_tasks:
-    - name: variables
-      ansible.builtin.include_vars: vars/all.yml
-    - name: System preperations
-      ansible.builtin.include_tasks: tasks/system_prepare.yml
+# - hosts:
+#     - k8s_masters
+#     - k8s_nodes
+#   gather_facts: true
+#   become: true
+#   pre_tasks:
+#     - name: variables
+#       ansible.builtin.include_vars: vars/all.yml
+#     - name: System preperations
+#       ansible.builtin.include_tasks: tasks/system_prepare.yml
 
-- hosts: k8s_masters
-  gather_facts: true
-  become: true
-  pre_tasks:
-    - name: variables
-      ansible.builtin.include_vars: vars/all.yml
-  roles:
-    - { role: k8s/k8s_masters }
+# - hosts: k8s_masters
+#   gather_facts: true
+#   become: true
+#   pre_tasks:
+#     - name: variables
+#       ansible.builtin.include_vars: vars/all.yml
+#   roles:
+#     - { role: k8s/k8s_masters }
 
-- hosts: k8s_nodes
-  gather_facts: true
-  become: true
-  pre_tasks:
-    - name: variables
-      ansible.builtin.include_vars: vars/all.yml
-  roles:
-    - { role: k8s/k8s_nodes }
+# - hosts: k8s_nodes
+#   gather_facts: true
+#   become: true
+#   pre_tasks:
+#     - name: variables
+#       ansible.builtin.include_vars: vars/all.yml
+#   roles:
+#     - { role: k8s/k8s_nodes }
 
-- hosts: k8s_masters
-  gather_facts: true
-  pre_tasks:
-    - name: vSphere-CSI
-      ansible.builtin.include_tasks: tasks/vSphere-CSI.yml
+# - hosts: k8s_masters
+#   gather_facts: true
+#   pre_tasks:
+#     - name: vSphere-CSI
+#       ansible.builtin.include_tasks: tasks/vSphere-CSI.yml
 
-- hosts: k8s_masters
-  gather_facts: true
-  pre_tasks:
-    - name: ArgoCD
-      ansible.builtin.include_tasks: tasks/argoCD-deployment.yml
+# - hosts: k8s_masters
+#   gather_facts: true
+#   pre_tasks:
+#     - name: ArgoCD
+#       ansible.builtin.include_tasks: tasks/argoCD-deployment.yml
       
 - hosts: k8s_masters
   gather_facts: true
