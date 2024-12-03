@@ -1,0 +1,12 @@
+- name: Add Grafana chart repo
+  kubernetes.core.helm_repository:
+    name: grafana 
+    repo_url: "https://grafana.github.io/helm-charts"
+    update_repo_cache: true
+
+- name: Deploy latest version of Grafana chart inside monitoring namespace 
+  kubernetes.core.helm:
+    name: grafana
+    chart_ref: grafana/grafana
+    release_namespace: monitoring
+    create_namespace: true
