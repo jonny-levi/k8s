@@ -33,3 +33,15 @@
   pre_tasks:
     - name: vSphere-CSI
       ansible.builtin.include_tasks: tasks/vSphere-CSI.yml
+
+- hosts: k8s_masters
+  gather_facts: true
+  pre_tasks:
+    - name: ArgoCD
+      ansible.builtin.include_tasks: tasks/argoCD-deployment.yml
+      
+- hosts: k8s_masters
+  gather_facts: true
+  pre_tasks:
+    - name: Grafana
+      ansible.builtin.include_tasks: tasks/grafana-deployment.yml
