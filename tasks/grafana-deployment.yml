@@ -1,3 +1,4 @@
+---
 - name: Check if namespace exists
   ansible.builtin.shell: |
     kubectl get namespace monitoring --no-headers || echo "NotFound"
@@ -10,9 +11,6 @@
     kubectl create namespace monitoring
   when: "'NotFound' in namespace_check.stdout"
   become_user: jonathan
-
-- name: install ansible collection kubernetes.core
-  ansible.builtin.shell: ansible-galaxy collection install kubernetes.core
 
 - name: Add Grafana chart repo
   kubernetes.core.helm_repository:
