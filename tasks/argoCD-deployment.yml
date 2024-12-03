@@ -3,8 +3,18 @@
     kubectl get namespace argocd --no-headers || echo "NotFound"
   register: namespace_check
   failed_when: namespace_check.rc not in [0, 1] # Ignore errors if namespace doesn't exist
+  become_user: jonathan
 
 - name: Create namespace if it does not exist
   ansible.builtin.shell: |
     kubectl create namespace argocd
   when: "'NotFound' in namespace_check.stdout"
+  become_user: jonathan
+
+- name: Deploying argocd
+  ansible.builtin.shell: helm install argocd argo/argo-cd -n argocd --set global.securityContext.runAsUser=999
+  become_user: jonathan
+
+- name: Exposing argocd service
+  ansible.builtin.shell: kubectl patch svc argocd-server -n argocd --type='json' -p '[{"op":"replace","path":"/spec/type","value":"LoadBalancer"}]'
+  become_user: jonathan
