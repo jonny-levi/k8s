@@ -1,0 +1,28 @@
+- name: Check if prometheus namespace exists
+  ansible.builtin.shell: |
+    kubectl get namespace prometheus --no-headers || echo "NotFound"
+  register: namespace_check
+  failed_when: namespace_check.rc not in [0, 1] # Ignore errors if namespace doesn't exist
+  become_user: jonathan
+
+- name: Create prometheus namespace if it does not exist
+  ansible.builtin.shell: |
+    kubectl create namespace prometheus
+  when: "'NotFound' in namespace_check.stdout"
+  become_user: jonathan
+
+- name: Add Prometheus chart repo
+  kubernetes.core.helm_repository:
+    name: prometheus-community
+    repo_url: https://prometheus-community.github.io/helm-charts
+
+- name: Deploy Prometheus chart using set values on target
+  kubernetes.core.helm:
+    name: prometheus
+    chart_ref: prometheus
+    release_namespace: prometheus
+    set_values:
+      - value: server.service.type=LoadBalancer
+        value_type: string
+# - name: Create Prometheus Config Map
+#   ansible.builtin.shell: kubectl apply -f /tmp/prometheus-files/prometheus-config.yaml

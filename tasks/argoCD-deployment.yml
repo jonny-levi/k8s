@@ -12,9 +12,9 @@
   become_user: jonathan
 
 - name: Deploying argocd
-  ansible.builtin.shell: helm install argocd argo/argo-cd -n argocd --set global.securityContext.runAsUser=999
+  ansible.builtin.shell: helm install argocd argo/argo-cd -n argocd --set global.securityContext.runAsUser=999 --set server.service.type=LoadBalancer
   become_user: jonathan
 
-- name: Exposing argocd service
-  ansible.builtin.shell: kubectl patch svc argocd-server -n argocd --type='json' -p '[{"op":"replace","path":"/spec/type","value":"LoadBalancer"}]'
-  become_user: jonathan
+# - name: Exposing argocd service
+#   ansible.builtin.shell: kubectl patch svc argocd-server -n argocd --type='json' -p '[{"op":"replace","path":"/spec/type","value":"LoadBalancer"}]'
+#   become_user: jonathan
