@@ -24,7 +24,7 @@
 
 - name: Installing Java for Jenkins agent
   ansible.builtin.apt:
-    name: openjdk-17-jdk
+    name: openjdk-"{{ openjdk_version }}"-jdk
 
 - name: Install the package "net-tools"
   ansible.builtin.apt:
