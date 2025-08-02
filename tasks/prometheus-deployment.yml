@@ -19,7 +19,7 @@
 - name: Deploy Prometheus chart using set values on target
   kubernetes.core.helm:
     name: prometheus
-    chart_ref: prometheus
+    chart_ref: prometheus-community/prometheus
     release_namespace: prometheus
     set_values:
       - value: server.service.type=LoadBalancer
