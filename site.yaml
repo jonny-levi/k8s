@@ -22,6 +22,7 @@
 - hosts: k8s_nodes
   gather_facts: true
   become: true
+
   pre_tasks:
     - name: variables
       ansible.builtin.include_vars: vars/all.yml
@@ -39,7 +40,11 @@
   pre_tasks:
     - name: ArgoCD
       ansible.builtin.include_tasks: tasks/argoCD-deployment.yml
+      tags: ArgoCD
     - name: Grafana
       ansible.builtin.include_tasks: tasks/grafana-deployment.yml
+      tags: Grafana
     - name: Prometheus
       ansible.builtin.include_tasks: tasks/prometheus-deployment.yml
+      tags: Prometheus
+  become_user: jonathan

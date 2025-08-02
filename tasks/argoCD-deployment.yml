@@ -32,7 +32,7 @@
 - name: Deploy ArgoCD
   kubernetes.core.helm:
       name: argocd
-      chart_ref: argo/argo-cd
+      chart_ref: argocd/argo-cd
       release_namespace: argocd
       state: present
       values:
