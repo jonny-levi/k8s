@@ -1,3 +1,9 @@
+- name: Check if Helm is installed
+  ansible.builtin.command: helm version
+  register: helm_check
+  failed_when: helm_check.rc != 0
+  changed_when: false
+
 - name: Check if namespace exists
   ansible.builtin.shell: |
     kubectl get namespace argocd --no-headers || echo "NotFound"
@@ -11,9 +17,31 @@
   when: "'NotFound' in namespace_check.stdout"
   become_user: jonathan
 
-- name: Deploying argocd
-  ansible.builtin.shell: helm install argocd argo/argo-cd -n argocd --set global.securityContext.runAsUser=999 --set server.service.type=LoadBalancer
-  become_user: jonathan
+- name: Add ArgoCD chart repo
+  kubernetes.core.helm_repository:
+    name: argocd
+    repo_url: "https://argoproj.github.io/argo-helm"
+    state: present
+
+
+# - name: Deploying argocd
+#   ansible.builtin.shell: helm install argocd argo/argo-cd -n argocd --set global.securityContext.runAsUser=999 --set server.service.type=LoadBalancer
+#   become_user: jonathan
+
+
+- name: Deploy ArgoCD
+  kubernetes.core.helm:
+      name: argocd
+      chart_ref: argo/argo-cd
+      release_namespace: argocd
+      state: present
+      values:
+        global:
+          securityContext:
+            runAsUser: 999
+        server:
+          service:
+            type: LoadBalancer
 
 # - name: Exposing argocd service
 #   ansible.builtin.shell: kubectl patch svc argocd-server -n argocd --type='json' -p '[{"op":"replace","path":"/spec/type","value":"LoadBalancer"}]'

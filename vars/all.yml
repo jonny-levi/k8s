@@ -1,8 +1,8 @@
 join_token: v80n8z.wuep8jgbr7r0btnj
 container_runtime: unix:///run/containerd/containerd.sock
-runc_latest_version: v1.1.15
-containerd_lastest_version: 1.7.23
-cni_plugin_version: v1.6.0
+runc_latest_version: v1.3.0
+containerd_lastest_version: 2.1.4
+cni_plugin_version: v1.7.1
 kubernetes_major_version_for_csi: 1.28
-kubernetes_version: v1.30
+kubernetes_version: v1.33
 openjdk_version: 21
