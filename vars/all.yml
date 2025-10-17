@@ -4,5 +4,13 @@ runc_latest_version: v1.3.0
 containerd_lastest_version: 2.1.4
 cni_plugin_version: v1.7.1
 kubernetes_major_version_for_csi: 1.28
-kubernetes_version: v1.33
+kubernetes_version: v1.34
 openjdk_version: 21
+docker_registry_host: 
+docker_registry_port:
+vcenter_host: 172.20.10.84
+vcenter_user: administrator@vsphere.local
+vcenter_password: Superbon202#
+vcenter_port: 443
+vcenter_datastore_name: datastore1
+vcenter_datastore_folder_name: datastore1/kubernetes

@@ -37,17 +37,17 @@
       #ca-file = <ca file path> # optional, use with insecure-flag set to false
       #thumbprint = "<cert thumbprint>" # optional, use with insecure-flag set to false without providing ca-file
 
-      [VirtualCenter "172.20.10.84"]
+      [VirtualCenter "{{ vcenter_host }}"]
       insecure-flag = "true"
-      user = "administrator@vsphere.local"
-      password = "Superbon202#"
-      port = "443"
+      user = "{{ vcenter_user }}"
+      password = "{{ vcenter_password }}"
+      port = "{{ vcenter_port }}"
 
       [Workspace]
-      server = "172.20.10.84"    
+      server = "{{ vcenter_host }}"    
       datacenter = "Datacenter"  
-      folder = "datastore1/kubernetes" 
-      default-datastore = "datastore1"
+      folder = "{{ vcenter_datastore_folder_name }}" 
+      default-datastore = "{{ vcenter_datastore_name }}"
     create: true
 
 - name: Initializing vSphere-CSI storage controller

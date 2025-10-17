@@ -37,14 +37,20 @@
 
 - hosts: k8s_masters
   gather_facts: true
+  vars_files:
+    - inventory/components.yaml
   pre_tasks:
     - name: ArgoCD
       ansible.builtin.include_tasks: tasks/argoCD-deployment.yml
       tags: ArgoCD
+      when: argocd_deployment | bool 
     - name: Grafana
       ansible.builtin.include_tasks: tasks/grafana-deployment.yml
       tags: Grafana
+      when: grafana_deployment | bool
     - name: Prometheus
       ansible.builtin.include_tasks: tasks/prometheus-deployment.yml
       tags: Prometheus
+      when: prometheus_deployment
   become_user: jonathan
+  
