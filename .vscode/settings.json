@@ -1,3 +1,23 @@
 {
-    "ansible.python.interpreterPath": "c:\\Users\\Jonathan\\AppData\\Local\\Programs\\Python\\Python39\\python.exe"
+  "ansible.python.interpreterPath": "c:\\Users\\Jonathan\\AppData\\Local\\Programs\\Python\\Python39\\python.exe",
+  "[yaml]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    // "editor.autoIndent": "advanced",
+    // "editor.formatOnSave": true,
+    "editor.defaultFormatter": "redhat.vscode-yaml",
+    "editor.autoIndent": "none",
+    "editor.formatOnSave": false,
+    "editor.formatOnType": false
+  },
+  "yaml.format.enable": true,
+  "yaml.format.singleQuote": false,
+  "yaml.format.bracketSpacing": true,
+  "yaml.schemas": {
+    "https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json": "*.yml"
+  },
+  "files.associations": {
+    "*.yml": "yaml",
+    "*.yaml": "yaml"
+  }
 }

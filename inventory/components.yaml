@@ -1,0 +1,5 @@
+argocd_deployment: false
+
+grafana_deployment: false
+
+prometheus_deployment: false

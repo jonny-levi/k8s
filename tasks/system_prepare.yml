@@ -60,7 +60,7 @@
     dest: /usr/local
     remote_src: yes
 
-- name: Containerd settings - creating directory for containerd
+- name: Containerd settings - creating directory for containerd service
   ansible.builtin.file:
     path: /usr/local/lib/systemd/system/
     state: directory
@@ -124,7 +124,7 @@
       timeout: 10
       debug: true
 
-- name: Containerd settings - creating directory for containerd
+- name: Containerd settings - creating directory for containerd configurations
   ansible.builtin.file:
     path: /etc/containerd/
     state: directory
@@ -140,12 +140,13 @@
     path: /etc/containerd/config.toml
     regexp: '^\[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.configs\]'
     line: |
-      [plugins."io.containerd.grpc.v1.cri".registry.configs."172.20.10.20:31212".tls]
+      [plugins."io.containerd.grpc.v1.cri".registry.configs."{{ docker_registry_host }}:{{ docker_registry_port }}".tls]
         insecure_skip_verify = true
     state: present
     backrefs: yes
     insertafter: EOF
   notify: Restart containerd
+  when: docker_registry_host is defined and docker_registry_port is defined
 
 - name: Containerd settings - copy configuration to config.toml
   ansible.builtin.shell: containerd config default > /etc/containerd/config.toml
