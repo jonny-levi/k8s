@@ -43,6 +43,10 @@
           service:
             type: LoadBalancer
 
+- name: ArgoCD access password
+  ansible.builtin.shell: kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath='{.data.password}' | base64 -d
+
+
 # - name: Exposing argocd service
 #   ansible.builtin.shell: kubectl patch svc argocd-server -n argocd --type='json' -p '[{"op":"replace","path":"/spec/type","value":"LoadBalancer"}]'
 #   become_user: jonathan

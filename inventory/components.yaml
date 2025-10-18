@@ -1,5 +1,8 @@
-argocd_deployment: false
+#ArgoCD
+argocd_deployment: true
 
-grafana_deployment: false
+#Grafana
+grafana_deployment: true
 
-prometheus_deployment: false
+#Prometheus
+prometheus_deployment: true

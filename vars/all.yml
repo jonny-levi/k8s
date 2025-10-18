@@ -6,8 +6,8 @@ cni_plugin_version: v1.7.1
 kubernetes_major_version_for_csi: 1.28
 kubernetes_version: v1.34
 openjdk_version: 21
-docker_registry_host: 
-docker_registry_port:
+docker_registry_host: 172.20.10.120
+docker_registry_port: 5000
 vcenter_host: 172.20.10.84
 vcenter_user: administrator@vsphere.local
 vcenter_password: Superbon202#
