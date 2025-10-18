@@ -135,18 +135,24 @@
     path: /etc/containerd/config.toml
     state: touch
 
-- name: Update containerd config.toml to ignore TLS for specific registry
-  ansible.builtin.lineinfile:
-    path: /etc/containerd/config.toml
-    regexp: '^\[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.configs\]'
-    line: |
-      [plugins."io.containerd.grpc.v1.cri".registry.configs."{{ docker_registry_host }}:{{ docker_registry_port }}".tls]
-        insecure_skip_verify = true
-    state: present
-    backrefs: yes
-    insertafter: EOF
-  notify: Restart containerd
-  when: docker_registry_host is defined and docker_registry_port is defined
+# - name: Update containerd config.toml to ignore TLS for specific registry
+#   ansible.builtin.lineinfile:
+#     path: /etc/containerd/config.toml
+#     regexp: '^\[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.configs\]'
+#     line: |
+#       [plugins."io.containerd.grpc.v1.cri".registry.configs."{{ docker_registry_host }}:{{ docker_registry_port }}".tls]
+#         insecure_skip_verify = true
+#     state: present
+#     backrefs: yes
+#     insertafter: EOF
+#   notify: Restart containerd
+#   when: docker_registry_host is defined and docker_registry_port is defined
+#   register: update_docker_registry_in_containerd
+
+# - name: Updating the Docker registry IP address in Containerd configuration
+#   ansible.builtin.debug:
+#     msg: "{{update_docker_registry_in_containerd}}"
+#   when: docker_registry_host is defined and docker_registry_port is defined
 
 - name: Containerd settings - copy configuration to config.toml
   ansible.builtin.shell: containerd config default > /etc/containerd/config.toml
@@ -154,12 +160,22 @@
 - name: Reload daemon-reload
   ansible.builtin.systemd:
     daemon_reload: true
+  register: daemon_reload
 
+- name: Performing daemon reload
+  ansible.builtin.debug:
+    msg: "{{daemon_reload}}"
+  
 - name: Enable containerd service
   ansible.builtin.service:
     name: containerd
     enabled: yes
     state: started
+  register: enable_containerd
+
+- name: Enabling containerd service
+  ansible.builtin.debug:
+    msg: "{{enable_containerd}}"
 
 - name: Download runc
   ansible.builtin.get_url:
@@ -224,6 +240,7 @@
   ansible.builtin.apt:
     name: "*"
     state: latest
+  timeout: 600
 
 - name: Install a list prerequisites for the k8s cluster
   ansible.builtin.apt:
@@ -249,9 +266,11 @@
     name: "*"
     state: latest
   become: true
+  timeout: 600
 
 - name: Updating again all packages
   ansible.builtin.shell: sudo apt-get update
+  timeout: 600
 
 - name: Install a list prerequisites for the k8s cluster
   ansible.builtin.apt:

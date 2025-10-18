@@ -24,3 +24,6 @@
     chart_ref: grafana/grafana
     release_namespace: monitoring
 
+
+- name: Grafana access password
+  ansible.builtin.shell: kubectl get secret grafana -n monitoring -o jsonpath='{.data.admin-password}' | base64 -d
