@@ -45,6 +45,12 @@
 
 - name: ArgoCD access password
   ansible.builtin.shell: kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath='{.data.password}' | base64 -d
+  register: argocd_pass
+
+
+- name: AegoCD access password 
+  ansible.builtin.debug:
+    msg: "{{argocd_pass}}"
 
 
 # - name: Exposing argocd service

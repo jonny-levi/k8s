@@ -24,5 +24,7 @@
     set_values:
       - value: server.service.type=LoadBalancer
         value_type: string
+
+
 # - name: Create Prometheus Config Map
 #   ansible.builtin.shell: kubectl apply -f /tmp/prometheus-files/prometheus-config.yaml
