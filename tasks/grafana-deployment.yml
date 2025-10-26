@@ -27,3 +27,8 @@
 
 - name: Grafana access password
   ansible.builtin.shell: kubectl get secret grafana -n monitoring -o jsonpath='{.data.admin-password}' | base64 -d
+  register: grafana_pass
+
+- name: Grafana access pass
+  ansible.builtin.debug:
+    msg: "{{grafana_pass}}"
