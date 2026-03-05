@@ -3,7 +3,7 @@ velero:
   kubectl:
     image:
       repository: bitnami/kubectl
-      tag: "1.31"
+      tag: "latest"
 
   # Use node-agent (Restic/Kopia) for file-level backups
   deployNodeAgent: true
