@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velero-minio
+  namespace: velero
+  labels:
+    app: velero-minio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: velero-minio
+  template:
+    metadata:
+      labels:
+        app: velero-minio
+    spec:
+      nodeSelector:
+        topology.kubernetes.io/esxi: "esxi2"
+      containers:
+        - name: minio
+          image: minio/minio:latest
+          args:
+            - server
+            - /data
+            - --console-address
+            - ":9001"
+          env:
+            - name: MINIO_ROOT_USER
+              value: "velero"
+            - name: MINIO_ROOT_PASSWORD
+              value: "velero123456"
+          ports:
+            - containerPort: 9000
+              name: api
+            - containerPort: 9001
+              name: console
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /minio/health/ready
+              port: 9000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: velero-minio-data
