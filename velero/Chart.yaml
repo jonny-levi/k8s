@@ -1,0 +1,8 @@
+apiVersion: v2
+name: velero
+description: Velero backup solution for K8s cluster
+version: 1.0.0
+dependencies:
+  - name: velero
+    version: "8.7.0"
+    repository: "https://vmware-tanzu.github.io/helm-charts"
