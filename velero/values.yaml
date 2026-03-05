@@ -1,8 +1,13 @@
 velero:
-  # Use Restic (now called node-agent) for file-level backups
+  # Fix kubectl image version
+  kubectl:
+    image:
+      repository: bitnami/kubectl
+      tag: "1.31"
+
+  # Use node-agent (Restic/Kopia) for file-level backups
   deployNodeAgent: true
 
-  # Node agent (Restic/Kopia) config
   nodeAgent:
     podVolumePath: /var/lib/kubelet/pods
     resources:
@@ -12,7 +17,6 @@ velero:
       limits:
         memory: 1Gi
 
-  # Velero server config
   resources:
     requests:
       cpu: 100m
@@ -23,9 +27,7 @@ velero:
   # Use file-system backup by default for all PVs
   defaultVolumesToFsBackup: true
 
-  # Configuration
   configuration:
-    # No cloud provider - using NFS via PVC
     backupStorageLocation:
       - name: nfs-backup
         provider: velero.io/aws
@@ -40,15 +42,9 @@ velero:
           insecureSkipTLSVerify: "true"
 
     volumeSnapshotLocation: []
-
-    # Default backup storage location
     defaultBackupStorageLocation: nfs-backup
-
-    # Features
     features: EnableCSI
 
-  # We'll deploy a MinIO instance backed by NFS for S3 compatibility
-  # This is the simplest way to get Velero working with NFS
   credentials:
     useSecret: true
     name: velero-s3-creds
@@ -58,13 +54,20 @@ velero:
         aws_access_key_id = velero
         aws_secret_access_key = velero123456
 
-  # Schedules - daily backups for critical namespaces
+  # AWS plugin for S3 compatibility
+  initContainers:
+    - name: velero-plugin-for-aws
+      image: velero/velero-plugin-for-aws:v1.11.0
+      volumeMounts:
+        - mountPath: /target
+          name: plugins
+
+  # Backup schedules
   schedules:
     nextcloud-daily:
       disabled: false
       schedule: "0 2 * * *"
       useOwnerReferencesInBackup: false
-      paused: false
       template:
         ttl: "168h"
         storageLocation: nfs-backup
@@ -76,7 +79,6 @@ velero:
       disabled: false
       schedule: "0 2 * * *"
       useOwnerReferencesInBackup: false
-      paused: false
       template:
         ttl: "168h"
         storageLocation: nfs-backup
@@ -88,7 +90,6 @@ velero:
       disabled: false
       schedule: "0 3 * * *"
       useOwnerReferencesInBackup: false
-      paused: false
       template:
         ttl: "168h"
         storageLocation: nfs-backup
@@ -100,7 +101,6 @@ velero:
       disabled: false
       schedule: "0 3 * * *"
       useOwnerReferencesInBackup: false
-      paused: false
       template:
         ttl: "168h"
         storageLocation: nfs-backup
@@ -112,7 +112,6 @@ velero:
       disabled: false
       schedule: "0 4 * * *"
       useOwnerReferencesInBackup: false
-      paused: false
       template:
         ttl: "168h"
         storageLocation: nfs-backup
@@ -124,18 +123,9 @@ velero:
       disabled: false
       schedule: "0 4 * * *"
       useOwnerReferencesInBackup: false
-      paused: false
       template:
         ttl: "168h"
         storageLocation: nfs-backup
         defaultVolumesToFsBackup: true
         includedNamespaces:
           - staging
-
-  # Init containers to handle CRDs
-  initContainers:
-    - name: velero-plugin-for-aws
-      image: velero/velero-plugin-for-aws:v1.11.0
-      volumeMounts:
-        - mountPath: /target
-          name: plugins
