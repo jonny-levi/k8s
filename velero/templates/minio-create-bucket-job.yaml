@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: velero-minio-setup
+  namespace: velero
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      nodeSelector:
+        topology.kubernetes.io/esxi: "esxi2"
+      containers:
+        - name: mc
+          image: minio/mc:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              sleep 10
+              mc alias set myminio http://velero-minio.velero.svc:9000 velero velero123456
+              mc mb --ignore-existing myminio/velero
+              echo "Bucket 'velero' ready"
