@@ -1,10 +1,23 @@
 - name: Initialize the Kubernetes cluster using kubeadm
-  ansible.builtin.shell: "sudo kubeadm init --token {{ join_token }} --pod-network-cidr=10.244.0.0/16 --cri-socket {{ container_runtime }}"
+  ansible.builtin.command: >
+    kubeadm init
+    --pod-network-cidr=10.244.0.0/16
+    --cri-socket {{ container_runtime }}
   register: init_output
   tags: [init]
 
 - debug:
     var: init_output.stdout_lines
+  tags: [init]
+
+- name: Generate join command
+  ansible.builtin.command: kubeadm token create --print-join-command
+  register: join_command
+  tags: [init]
+
+- name: Store join command as fact
+  ansible.builtin.set_fact:
+    kubeadm_join_cmd: "{{ join_command.stdout }}"
   tags: [init]
 
 - name: Creating .kube directory
