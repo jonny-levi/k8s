@@ -5,22 +5,21 @@
 
 - name: Verifying hostname for all hosts
   ansible.builtin.debug:
-    msg: "{{hostname_result}}"
+    msg: "{{ hostname_result }}"
 
 - name: Inserting hosts names and IP to hosts file
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: /etc/hosts
     line: "{{ hostvars[item]['ansible_hostname'] | regex_replace('_','-') }} {{ hostvars[item]['ansible_default_ipv4']['address'] }} {{ hostvars[item]['inventory_hostname'] | regex_replace('_','-') }}"
     state: present
   with_items: "{{ play_hosts }}"
 
-- name: Update all packages using shell
-  ansible.builtin.shell: sudo apt update -y && sudo apt upgrade -y
-
-- name: Update all packages
+- name: Update and upgrade all packages
   ansible.builtin.apt:
-    name: "*"
-    state: latest
+    upgrade: dist
+    update_cache: yes
+    cache_valid_time: 3600
+  timeout: 600
 
 - name: Install python3-pip and python3-venv packages
   ansible.builtin.apt:
@@ -28,264 +27,228 @@
       - python3-pip
       - python3-venv
     state: present
-    update_cache: yes
 
 - name: Installing Java for Jenkins agent
   ansible.builtin.apt:
     name: openjdk-{{ openjdk_version }}-jdk
 
-- name: Install the package "net-tools"
+- name: Install net-tools
   ansible.builtin.apt:
     name: net-tools
 
-# - name: Disable swap - Commenting swap from /etc/fstab
-#   ansible.builtin.shell: sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+- name: Disable swap in fstab
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    regexp: '.*swap.*'
+    state: absent
 
-- name: Disable swap - Commenting swap from /etc/fstab
-  ansible.builtin.shell: sudo sed -i '/swap/d' /etc/fstab
+- name: Disable swap now
+  ansible.builtin.command: swapoff -a
+  changed_when: true
 
-- name: Disable swap - Unmounting swap
-  ansible.builtin.shell: sudo swapoff -a
+# --- Kernel modules ---
 
-- name: Disable swap - Save mount changes
-  ansible.builtin.shell: sudo mount -a
+- name: Load required kernel modules
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - overlay
+    - br_netfilter
 
-- name: Disable swap - Release swap
-  ansible.builtin.shell: free -h
+- name: Ensure kernel modules load on boot
+  ansible.builtin.copy:
+    dest: /etc/modules-load.d/kubernetes.conf
+    content: |
+      overlay
+      br_netfilter
+    mode: "0644"
 
-- name: Reload sysctl
-  ansible.builtin.shell: sudo sysctl --system
+# --- Sysctl ---
 
-- name: copy containerd file local
+- name: Configure sysctl for Kubernetes
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    sysctl_file: /etc/sysctl.d/kubernetes.conf
+    reload: yes
+  loop:
+    - { key: net.bridge.bridge-nf-call-ip6tables, value: '1' }
+    - { key: net.bridge.bridge-nf-call-iptables, value: '1' }
+    - { key: net.ipv4.ip_forward, value: '1' }
+
+# --- Timezone ---
+
+- name: Set timezone
+  community.general.timezone:
+    name: Asia/Jerusalem
+
+# --- Containerd ---
+
+- name: Download containerd
   ansible.builtin.get_url:
     url: "https://github.com/containerd/containerd/releases/download/v{{ containerd_latest_version }}/containerd-{{ containerd_latest_version }}-linux-amd64.tar.gz"
     dest: /tmp
-    mode: "775"
+    mode: "0775"
 
-- name: Extract containerd files local
+- name: Extract containerd
   ansible.builtin.unarchive:
     src: /tmp/containerd-{{ containerd_latest_version }}-linux-amd64.tar.gz
     dest: /usr/local
     remote_src: yes
 
-- name: Containerd settings - creating directory for containerd service
+- name: Create containerd service directory
   ansible.builtin.file:
     path: /usr/local/lib/systemd/system/
     state: directory
     mode: "0755"
 
-- name: Containerd settings - copy configuration into the new directory for containerd
+- name: Install containerd systemd service
   ansible.builtin.blockinfile:
     path: /usr/local/lib/systemd/system/containerd.service
     create: true
     block: |
-      # Copyright The containerd Authors.
-      #
-      # Licensed under the Apache License, Version 2.0 (the "License");
-      # you may not use this file except in compliance with the License.
-      # You may obtain a copy of the License at
-      #
-      #     http://www.apache.org/licenses/LICENSE-2.0
-      #
-      # Unless required by applicable law or agreed to in writing, software
-      # distributed under the License is distributed on an "AS IS" BASIS,
-      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-      # See the License for the specific language governing permissions and
-      # limitations under the License.
-
       [Unit]
       Description=containerd container runtime
       Documentation=https://containerd.io
       After=network.target local-fs.target
 
       [Service]
-      #uncomment to enable the experimental sbservice (sandboxed) version of containerd/cri integration
-      #Environment="ENABLE_CRI_SANDBOXES=sandboxed"
       ExecStartPre=-/sbin/modprobe overlay
       ExecStart=/usr/local/bin/containerd
-
       Type=notify
       Delegate=yes
       KillMode=process
       Restart=always
       RestartSec=5
-      # Having non-zero Limit*s causes performance problems due to accounting overhead
-      # in the kernel. We recommend using cgroups to do container-local accounting.
       LimitNPROC=infinity
       LimitCORE=infinity
       LimitNOFILE=infinity
-      # Comment TasksMax if your systemd version does not supports it.
-      # Only systemd 226 and above support this version.
       TasksMax=infinity
       OOMScoreAdjust=-999
 
       [Install]
       WantedBy=multi-user.target
 
-- name: Crictl settings - set default runtime crictl
-  ansible.builtin.blockinfile:
-    path: /etc/crictl.yaml
-    create: true
-    block: |
+- name: Configure crictl
+  ansible.builtin.copy:
+    dest: /etc/crictl.yaml
+    content: |
       runtime-endpoint: unix:///var/run/containerd/containerd.sock
       image-endpoint: unix:///var/run/containerd/containerd.sock
       timeout: 10
       debug: true
+    mode: "0644"
 
-- name: Containerd settings - creating directory for containerd configurations
+- name: Create containerd config directory
   ansible.builtin.file:
     path: /etc/containerd/
     state: directory
     mode: "0755"
 
-- name: Containerd settings - creating default file for containerd
-  ansible.builtin.file:
-    path: /etc/containerd/config.toml
-    state: touch
-
-# - name: Update containerd config.toml to ignore TLS for specific registry
-#   ansible.builtin.lineinfile:
-#     path: /etc/containerd/config.toml
-#     regexp: '^\[plugins\."io\.containerd\.grpc\.v1\.cri"\.registry\.configs\]'
-#     line: |
-#       [plugins."io.containerd.grpc.v1.cri".registry.configs."{{ docker_registry_host }}:{{ docker_registry_port }}".tls]
-#         insecure_skip_verify = true
-#     state: present
-#     backrefs: yes
-#     insertafter: EOF
-#   notify: Restart containerd
-#   when: docker_registry_host is defined and docker_registry_port is defined
-#   register: update_docker_registry_in_containerd
-
-# - name: Updating the Docker registry IP address in Containerd configuration
-#   ansible.builtin.debug:
-#     msg: "{{update_docker_registry_in_containerd}}"
-#   when: docker_registry_host is defined and docker_registry_port is defined
-
-- name: Containerd settings - copy configuration to config.toml
+- name: Generate default containerd config
   ansible.builtin.shell: containerd config default > /etc/containerd/config.toml
+  args:
+    creates: /etc/containerd/config.toml.generated
 
-- name: Reload daemon-reload
+- name: Enable systemd cgroup in containerd
+  ansible.builtin.replace:
+    path: /etc/containerd/config.toml
+    regexp: "SystemdCgroup = false"
+    replace: "SystemdCgroup = true"
+
+- name: Reload systemd daemon
   ansible.builtin.systemd:
     daemon_reload: true
-  register: daemon_reload
 
-- name: Performing daemon reload
-  ansible.builtin.debug:
-    msg: "{{daemon_reload}}"
-  
-- name: Enable containerd service
+- name: Enable and start containerd
   ansible.builtin.service:
     name: containerd
     enabled: yes
-    state: started
-  register: enable_containerd
+    state: restarted
 
-- name: Enabling containerd service
-  ansible.builtin.debug:
-    msg: "{{enable_containerd}}"
+# --- Runc ---
 
 - name: Download runc
   ansible.builtin.get_url:
     url: "https://github.com/opencontainers/runc/releases/download/{{ runc_latest_version }}/runc.amd64"
-    dest: /tmp
-    mode: "775"
+    dest: /tmp/runc.amd64
+    mode: "0755"
 
-- name: Installing runc
-  ansible.builtin.shell: install -m 755 /tmp/runc.amd64 /usr/local/sbin/runc
+- name: Install runc
+  ansible.builtin.copy:
+    src: /tmp/runc.amd64
+    dest: /usr/local/sbin/runc
+    mode: "0755"
+    remote_src: yes
 
-- name: Download CNI plugins files
+# --- CNI plugins ---
+
+- name: Download CNI plugins
   ansible.builtin.get_url:
     url: "https://github.com/containernetworking/plugins/releases/download/{{ cni_plugin_version }}/cni-plugins-linux-amd64-{{ cni_plugin_version }}.tgz"
     dest: /tmp
-    mode: "775"
+    mode: "0775"
 
-- name: Create cni directory
+- name: Create CNI directory
   ansible.builtin.file:
     path: /opt/cni/bin
     state: directory
     mode: "0755"
 
-- name: Extracting cni files
+- name: Extract CNI plugins
   ansible.builtin.unarchive:
     src: "/tmp/cni-plugins-linux-amd64-{{ cni_plugin_version }}.tgz"
     dest: /opt/cni/bin
     remote_src: yes
 
-- name: Enable systemd cgroup
-  replace:
-    path: /etc/containerd/config.toml
-    regexp: "SystemdCgroup = false"
-    replace: "SystemdCgroup = true"
+# --- Kubernetes packages ---
 
-- name: Restart service containerd
-  ansible.builtin.service:
-    name: containerd
-    state: restarted
-
-- name: Enable Kernel Modules
-  ansible.builtin.shell: sudo modprobe overlay
-
-- name: Enable Kernel Modules
-  ansible.builtin.shell: sudo modprobe br_netfilter
-
-- name: Containerd settings - iptables configurations
-  ansible.builtin.blockinfile:
-    path: /etc/sysctl.d/kubernetes.conf
-    create: true
-    block: |
-      net.bridge.bridge-nf-call-ip6tables = 1
-      net.bridge.bridge-nf-call-iptables = 1
-      net.ipv4.ip_forward = 1
-
-- name: Reload sysctl
-  ansible.builtin.shell: sudo sysctl --system
-
-- name: Reload sysctl
-  ansible.builtin.shell: timedatectl set-timezone Asia/Jerusalem
-
-- name: Update all packages to their latest version
+- name: Install prerequisites
   ansible.builtin.apt:
-    name: "*"
-    state: latest
-  timeout: 600
-
-- name: Install a list prerequisites for the k8s cluster
-  ansible.builtin.apt:
-    pkg:
+    name:
       - apt-transport-https
       - ca-certificates
       - curl
       - nfs-common
+    state: present
 
-- name: Installing kubeadm, kubelet and kubectl - installing prerequisites
-  file:
+- name: Create keyrings directory
+  ansible.builtin.file:
     path: /etc/apt/keyrings
     state: directory
+    mode: "0755"
 
-- name: Installing kubeadm, kubelet and kubectl - adding google repository keys
-  ansible.builtin.shell: sudo curl -fsSL https://pkgs.k8s.io/core:/stable:/{{ kubernetes_version }}/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+- name: Add Kubernetes apt key
+  ansible.builtin.shell: >
+    curl -fsSL https://pkgs.k8s.io/core:/stable:/{{ kubernetes_version }}/deb/Release.key
+    | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  args:
+    creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
-- name: Installing kubeadm, kubelet and kubectl - adding google to the sources.list
-  ansible.builtin.shell: echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/{{ kubernetes_version }}/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+- name: Add Kubernetes apt repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/{{ kubernetes_version }}/deb/ /"
+    filename: kubernetes
+    state: present
 
-- name: Update all packages to their latest version
+- name: Update apt cache
   ansible.builtin.apt:
-    name: "*"
-    state: latest
-  become: true
-  timeout: 600
+    update_cache: yes
 
-- name: Updating again all packages
-  ansible.builtin.shell: sudo apt-get update
-  timeout: 600
-
-- name: Install a list prerequisites for the k8s cluster
+- name: Install kubelet, kubeadm, kubectl
   ansible.builtin.apt:
-    pkg:
+    name:
       - kubelet
       - kubeadm
       - kubectl
+    state: present
 
-- name: Installing kubeadm, kubelet and kubectl - holding services kubelet kubeadm kubectl
-  ansible.builtin.shell: sudo apt-mark hold kubelet kubeadm kubectl
+- name: Hold Kubernetes packages
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop:
+    - kubelet
+    - kubeadm
+    - kubectl

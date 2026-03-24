@@ -20,9 +20,13 @@
     kubeadm_join_cmd: "{{ join_command.stdout }}"
   tags: [init]
 
-- name: Creating .kube directory
-  ansible.builtin.shell: mkdir -p /home/"{{hostvars['master_node01']['ansible_ssh_user']}}"/.kube
-  become_user: "{{hostvars['master_node01']['ansible_ssh_user']}}"
+- name: Create .kube directory
+  ansible.builtin.file:
+    path: "/home/{{ hostvars['master_node01']['ansible_ssh_user'] }}/.kube"
+    state: directory
+    mode: "0755"
+    owner: "{{ hostvars['master_node01']['ansible_ssh_user'] }}"
+    group: "{{ hostvars['master_node01']['ansible_ssh_user'] }}"
   tags: [init]
 
 - name: Copy kubeconfig with owner and permissions
