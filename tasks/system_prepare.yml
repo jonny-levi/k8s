@@ -58,13 +58,13 @@
 
 - name: copy containerd file local
   ansible.builtin.get_url:
-    url: "https://github.com/containerd/containerd/releases/download/v{{ containerd_lastest_version }}/containerd-{{ containerd_lastest_version }}-linux-amd64.tar.gz"
+    url: "https://github.com/containerd/containerd/releases/download/v{{ containerd_latest_version }}/containerd-{{ containerd_latest_version }}-linux-amd64.tar.gz"
     dest: /tmp
     mode: "775"
 
 - name: Extract containerd files local
   ansible.builtin.unarchive:
-    src: /tmp/containerd-{{ containerd_lastest_version }}-linux-amd64.tar.gz
+    src: /tmp/containerd-{{ containerd_latest_version }}-linux-amd64.tar.gz
     dest: /usr/local
     remote_src: yes
 

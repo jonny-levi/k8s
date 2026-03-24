@@ -30,7 +30,7 @@ all:
           ansible_ssh_user: jonathan
           ansible_ssh_pass: ***REMOVED***
           ansible_sudo_pass: ***REMOVED***
-    ansbile_controllers:
+    ansible_controllers:
       hosts:
         localhost:
           ansible_host: 192.168.245.131

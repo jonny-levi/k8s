@@ -4,15 +4,17 @@
     - k8s_nodes
   gather_facts: true
   become: true
+  tags: [system]
   pre_tasks:
     - name: variables
       ansible.builtin.include_vars: vars/all.yml
-    - name: System preperations
+    - name: System preparations
       ansible.builtin.include_tasks: tasks/system_prepare.yml
 
 - hosts: k8s_masters
   gather_facts: true
   become: true
+  tags: [masters]
   pre_tasks:
     - name: variables
       ansible.builtin.include_vars: vars/all.yml
@@ -22,7 +24,7 @@
 - hosts: k8s_nodes
   gather_facts: true
   become: true
-
+  tags: [workers]
   pre_tasks:
     - name: variables
       ansible.builtin.include_vars: vars/all.yml
@@ -31,26 +33,27 @@
 
 - hosts: k8s_masters
   gather_facts: true
+  tags: [csi]
   pre_tasks:
     - name: vSphere-CSI
       ansible.builtin.include_tasks: tasks/vSphere-CSI.yml
 
 - hosts: k8s_masters
   gather_facts: true
+  tags: [components]
   vars_files:
     - inventory/components.yaml
   pre_tasks:
     - name: ArgoCD
       ansible.builtin.include_tasks: tasks/argoCD-deployment.yml
-      tags: ArgoCD
-      when: argocd_deployment | bool 
+      tags: [argocd]
+      when: argocd_deployment | bool
     - name: Grafana
       ansible.builtin.include_tasks: tasks/grafana-deployment.yml
-      tags: Grafana
+      tags: [grafana]
       when: grafana_deployment | bool
     - name: Prometheus
       ansible.builtin.include_tasks: tasks/prometheus-deployment.yml
-      tags: Prometheus
+      tags: [prometheus]
       when: prometheus_deployment
   become_user: jonathan
-  
