@@ -30,6 +30,12 @@
     ./get_helm.sh
   become: true
 
+- name: Label worker nodes
+  command: >
+    kubectl label node {{ item }} nodepool=workers --overwrite
+  loop: "{{ groups['k8s_nodes'] }}"
+  run_once: true
+  
 
 - name: Add Cilium chart repo
   kubernetes.core.helm_repository:

@@ -20,6 +20,16 @@ all:
           ansible_ssh_user: jonathan
           ansible_ssh_pass: ***REMOVED***
           ansible_sudo_pass: ***REMOVED***
+        worker_node03:
+          ansible_host: 172.20.10.33
+          ansible_ssh_user: jonathan
+          ansible_ssh_pass: ***REMOVED***
+          ansible_sudo_pass: ***REMOVED***
+        worker_node04:
+          ansible_host: 172.20.10.34
+          ansible_ssh_user: jonathan
+          ansible_ssh_pass: ***REMOVED***
+          ansible_sudo_pass: ***REMOVED***
     ansbile_controllers:
       hosts:
         localhost:

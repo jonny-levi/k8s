@@ -14,3 +14,8 @@ vcenter_password: ***REMOVED***
 vcenter_port: 443
 vcenter_datastore_name: datastore1
 vcenter_datastore_folder_name: datastore1/kubernetes
+
+
+
+######
+old_token: ***REMOVED***
