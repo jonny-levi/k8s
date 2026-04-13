@@ -6,34 +6,34 @@ all:
         master_node01:
           ansible_host: 172.20.10.30
           ansible_ssh_user: jonathan 
-          ansible_ssh_pass: ***REMOVED***
-          ansible_sudo_pass: ***REMOVED***
+          ansible_ssh_pass: 
+          ansible_sudo_pass: 
     k8s_nodes:
       hosts:
         worker_node01:
           ansible_host: 172.20.10.31
           ansible_ssh_user: jonathan
-          ansible_ssh_pass: ***REMOVED***
-          ansible_sudo_pass: ***REMOVED***
+          ansible_ssh_pass: 
+          ansible_sudo_pass: 
         worker_node02:
           ansible_host: 172.20.10.32
           ansible_ssh_user: jonathan
-          ansible_ssh_pass: ***REMOVED***
-          ansible_sudo_pass: ***REMOVED***
+          ansible_ssh_pass: 
+          ansible_sudo_pass: 
         worker_node03:
           ansible_host: 172.20.10.33
           ansible_ssh_user: jonathan
-          ansible_ssh_pass: ***REMOVED***
-          ansible_sudo_pass: ***REMOVED***
+          ansible_ssh_pass: 
+          ansible_sudo_pass: 
         worker_node04:
           ansible_host: 172.20.10.34
           ansible_ssh_user: jonathan
-          ansible_ssh_pass: ***REMOVED***
-          ansible_sudo_pass: ***REMOVED***
+          ansible_ssh_pass: 
+          ansible_sudo_pass: 
     ansible_controllers:
       hosts:
         localhost:
           ansible_host: 192.168.245.131
           ansible_ssh_user: jonathan
-          ansible_ssh_pass: ***REMOVED***
-          ansible_sudo_pass: ***REMOVED***
+          ansible_ssh_pass: 
+          ansible_sudo_pass: 
