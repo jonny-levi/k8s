@@ -19,7 +19,7 @@ metadata:
   # NOTE: this is just an example configuration, update with real values based on your environment
 stringData:
   172.20.10.84.username: "administrator@vsphere.local"
-  172.20.10.84.password: "***REMOVED***"
+  172.20.10.84.password: "REPLACE_ME"
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -46,7 +46,7 @@ data:
       your-vcenter-name-here:
         server: 172.20.10.84
         user: administrator@vsphere.local
-        password: ***REMOVED***
+        password: REPLACE_ME
         datacenters:
           - Datacenter
       could-be-a-tenant-label:
